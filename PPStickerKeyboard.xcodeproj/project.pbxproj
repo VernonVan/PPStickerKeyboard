@@ -7,15 +7,25 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AD5E065A200B984E00D0365B /* Sticker.bundle in Resources */ = {isa = PBXBuildFile; fileRef = AD5E0659200B984E00D0365B /* Sticker.bundle */; };
 		AD608EF1200AF90500572A7E /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = AD608EF0200AF90500572A7E /* AppDelegate.m */; };
 		AD608EF4200AF90500572A7E /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AD608EF3200AF90500572A7E /* ViewController.m */; };
 		AD608EF7200AF90500572A7E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AD608EF5200AF90500572A7E /* Main.storyboard */; };
 		AD608EF9200AF90500572A7E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AD608EF8200AF90500572A7E /* Assets.xcassets */; };
 		AD608EFC200AF90500572A7E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AD608EFA200AF90500572A7E /* LaunchScreen.storyboard */; };
 		AD608EFF200AF90500572A7E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = AD608EFE200AF90500572A7E /* main.m */; };
+		AD703F10200B9CDF002F6F33 /* PPStickerKeyboard.m in Sources */ = {isa = PBXBuildFile; fileRef = AD703F0F200B9CDF002F6F33 /* PPStickerKeyboard.m */; };
+		AD703F16200B9D6F002F6F33 /* PPSticker.m in Sources */ = {isa = PBXBuildFile; fileRef = AD703F15200B9D6F002F6F33 /* PPSticker.m */; };
+		AD703F19200B9D7E002F6F33 /* PPEmoji.m in Sources */ = {isa = PBXBuildFile; fileRef = AD703F18200B9D7E002F6F33 /* PPEmoji.m */; };
+		AD703F1C200BAE38002F6F33 /* PPEmojiPreviewView.m in Sources */ = {isa = PBXBuildFile; fileRef = AD703F1B200BAE38002F6F33 /* PPEmojiPreviewView.m */; };
+		AD703F1F200BAE9F002F6F33 /* PPSlideLineButton.m in Sources */ = {isa = PBXBuildFile; fileRef = AD703F1E200BAE9F002F6F33 /* PPSlideLineButton.m */; };
+		AD9010CA200C3F9B004F8F0C /* PPUIColor.m in Sources */ = {isa = PBXBuildFile; fileRef = AD9010C9200C3F9B004F8F0C /* PPUIColor.m */; };
+		AD9010CD200C416C004F8F0C /* PPScreen.m in Sources */ = {isa = PBXBuildFile; fileRef = AD9010CC200C416C004F8F0C /* PPScreen.m */; };
+		AD9010D0200C9E31004F8F0C /* PPStickerPageView.m in Sources */ = {isa = PBXBuildFile; fileRef = AD9010CF200C9E31004F8F0C /* PPStickerPageView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		AD5E0659200B984E00D0365B /* Sticker.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Sticker.bundle; sourceTree = "<group>"; };
 		AD608EEC200AF90500572A7E /* PPStickerKeyboard.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PPStickerKeyboard.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AD608EEF200AF90500572A7E /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		AD608EF0200AF90500572A7E /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -26,6 +36,22 @@
 		AD608EFB200AF90500572A7E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		AD608EFD200AF90500572A7E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AD608EFE200AF90500572A7E /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		AD703F0E200B9CDF002F6F33 /* PPStickerKeyboard.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PPStickerKeyboard.h; sourceTree = "<group>"; };
+		AD703F0F200B9CDF002F6F33 /* PPStickerKeyboard.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PPStickerKeyboard.m; sourceTree = "<group>"; };
+		AD703F14200B9D6F002F6F33 /* PPSticker.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PPSticker.h; sourceTree = "<group>"; };
+		AD703F15200B9D6F002F6F33 /* PPSticker.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PPSticker.m; sourceTree = "<group>"; };
+		AD703F17200B9D7E002F6F33 /* PPEmoji.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PPEmoji.h; sourceTree = "<group>"; };
+		AD703F18200B9D7E002F6F33 /* PPEmoji.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PPEmoji.m; sourceTree = "<group>"; };
+		AD703F1A200BAE38002F6F33 /* PPEmojiPreviewView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PPEmojiPreviewView.h; sourceTree = "<group>"; };
+		AD703F1B200BAE38002F6F33 /* PPEmojiPreviewView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PPEmojiPreviewView.m; sourceTree = "<group>"; };
+		AD703F1D200BAE9F002F6F33 /* PPSlideLineButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PPSlideLineButton.h; sourceTree = "<group>"; };
+		AD703F1E200BAE9F002F6F33 /* PPSlideLineButton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PPSlideLineButton.m; sourceTree = "<group>"; };
+		AD9010C8200C3F9B004F8F0C /* PPUIColor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PPUIColor.h; sourceTree = "<group>"; };
+		AD9010C9200C3F9B004F8F0C /* PPUIColor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PPUIColor.m; sourceTree = "<group>"; };
+		AD9010CB200C416C004F8F0C /* PPScreen.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PPScreen.h; sourceTree = "<group>"; };
+		AD9010CC200C416C004F8F0C /* PPScreen.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PPScreen.m; sourceTree = "<group>"; };
+		AD9010CE200C9E31004F8F0C /* PPStickerPageView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PPStickerPageView.h; sourceTree = "<group>"; };
+		AD9010CF200C9E31004F8F0C /* PPStickerPageView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PPStickerPageView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,15 +86,40 @@
 			children = (
 				AD608EEF200AF90500572A7E /* AppDelegate.h */,
 				AD608EF0200AF90500572A7E /* AppDelegate.m */,
+				AD703F17200B9D7E002F6F33 /* PPEmoji.h */,
+				AD703F18200B9D7E002F6F33 /* PPEmoji.m */,
+				AD703F14200B9D6F002F6F33 /* PPSticker.h */,
+				AD703F15200B9D6F002F6F33 /* PPSticker.m */,
+				AD703F1D200BAE9F002F6F33 /* PPSlideLineButton.h */,
+				AD703F1E200BAE9F002F6F33 /* PPSlideLineButton.m */,
+				AD703F1A200BAE38002F6F33 /* PPEmojiPreviewView.h */,
+				AD703F1B200BAE38002F6F33 /* PPEmojiPreviewView.m */,
+				AD9010CE200C9E31004F8F0C /* PPStickerPageView.h */,
+				AD9010CF200C9E31004F8F0C /* PPStickerPageView.m */,
+				AD703F0E200B9CDF002F6F33 /* PPStickerKeyboard.h */,
+				AD703F0F200B9CDF002F6F33 /* PPStickerKeyboard.m */,
 				AD608EF2200AF90500572A7E /* ViewController.h */,
 				AD608EF3200AF90500572A7E /* ViewController.m */,
 				AD608EF5200AF90500572A7E /* Main.storyboard */,
+				AD5E0659200B984E00D0365B /* Sticker.bundle */,
+				AD9010C7200C3E62004F8F0C /* Util */,
 				AD608EF8200AF90500572A7E /* Assets.xcassets */,
 				AD608EFA200AF90500572A7E /* LaunchScreen.storyboard */,
 				AD608EFD200AF90500572A7E /* Info.plist */,
 				AD608EFE200AF90500572A7E /* main.m */,
 			);
 			path = PPStickerKeyboard;
+			sourceTree = "<group>";
+		};
+		AD9010C7200C3E62004F8F0C /* Util */ = {
+			isa = PBXGroup;
+			children = (
+				AD9010C8200C3F9B004F8F0C /* PPUIColor.h */,
+				AD9010C9200C3F9B004F8F0C /* PPUIColor.m */,
+				AD9010CB200C416C004F8F0C /* PPScreen.h */,
+				AD9010CC200C416C004F8F0C /* PPScreen.m */,
+			);
+			path = Util;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -132,6 +183,7 @@
 				AD608EFC200AF90500572A7E /* LaunchScreen.storyboard in Resources */,
 				AD608EF9200AF90500572A7E /* Assets.xcassets in Resources */,
 				AD608EF7200AF90500572A7E /* Main.storyboard in Resources */,
+				AD5E065A200B984E00D0365B /* Sticker.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -142,8 +194,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AD703F10200B9CDF002F6F33 /* PPStickerKeyboard.m in Sources */,
+				AD9010CA200C3F9B004F8F0C /* PPUIColor.m in Sources */,
+				AD9010D0200C9E31004F8F0C /* PPStickerPageView.m in Sources */,
 				AD608EF4200AF90500572A7E /* ViewController.m in Sources */,
+				AD9010CD200C416C004F8F0C /* PPScreen.m in Sources */,
+				AD703F1C200BAE38002F6F33 /* PPEmojiPreviewView.m in Sources */,
+				AD703F1F200BAE9F002F6F33 /* PPSlideLineButton.m in Sources */,
+				AD703F16200B9D6F002F6F33 /* PPSticker.m in Sources */,
 				AD608EFF200AF90500572A7E /* main.m in Sources */,
+				AD703F19200B9D7E002F6F33 /* PPEmoji.m in Sources */,
 				AD608EF1200AF90500572A7E /* AppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
