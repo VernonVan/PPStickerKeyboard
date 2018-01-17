@@ -13,6 +13,7 @@
 #import "PPUIColor.h"
 #import "PPScreen.h"
 #import "PPStickerPageView.h"
+#import "PPQueuingScrollView.h"
 
 static CGFloat const PPStickerTopInset = 12.0;
 static CGFloat const PPStickerScrollViewHeight = 132.0;
@@ -23,11 +24,13 @@ static CGFloat const PPKeyboardCoverButtonHeight = 44.0;
 static CGFloat const PPPreviewViewWidth = 92.0;
 static CGFloat const PPPreviewViewHeight = 137.0;
 
+static NSString *const PPStickerPageViewReuseID = @"PPStickerPageView";
+
 #define SEGMENT_HEIGHT ([UIScreen pp_isIPhoneX] ? 34.0 + 44.0 : 44.0)
 
-@interface PPStickerKeyboard ()
+@interface PPStickerKeyboard () <PPStickerPageViewDelegate>
 @property (nonatomic, strong) NSArray<PPSticker *> *stickers;
-@property (nonatomic, strong) UIScrollView *queuingScrollView;
+@property (nonatomic, strong) PPQueuingScrollView *queuingScrollView;
 @property (nonatomic, strong) UIPageControl *pageControl;
 @property (nonatomic, strong) NSArray<PPSlideLineButton *> *stickerCoverButtons;
 @property (nonatomic, strong) PPSlideLineButton *sendButton;
@@ -52,42 +55,22 @@ static CGFloat const PPPreviewViewHeight = 137.0;
         [self addSubview:self.bottomScrollableSegment];
 
         [self initStickers];
-        [self reloadScrollableSegment];
         [self changeStickerToIndex:0];
     }
     return self;
-}
-
-- (void)initStickers
-{
-}
-
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)layoutSubviews
 {
     [super layoutSubviews];
 
+    self.queuingScrollView.contentSize = CGSizeMake([self numberOfPageForSticker:[self stickerAtIndex:_currentStickerIndex]] * CGRectGetWidth(self.bounds), PPStickerScrollViewHeight);
     self.queuingScrollView.frame = CGRectMake(0, PPStickerTopInset, CGRectGetWidth(self.bounds), PPStickerScrollViewHeight);
     self.pageControl.frame = CGRectMake(0, CGRectGetMaxY(self.queuingScrollView.frame) + PPKeyboardPageControlTopMargin, CGRectGetWidth(self.bounds), PPKeyboardPageControlHeight);
 
-    NSUInteger buttonCount = self.stickerCoverButtons.count;
-    [self reloadScrollableSegment];
-    for (NSUInteger i = 0; i < buttonCount; i++) {
-        PPSlideLineButton *button = self.stickerCoverButtons[i];
-        button.frame = CGRectMake(i * PPKeyboardCoverButtonWidth, 0, PPKeyboardCoverButtonWidth, PPKeyboardCoverButtonHeight);
-
-        if (_currentStickerIndex == i) {
-            button.backgroundColor = [UIColor pp_colorWithRGBString:@"#EDEDED"];
-        } else {
-            button.backgroundColor = [UIColor whiteColor];
-        }
-    }
-    self.bottomScrollableSegment.contentSize = CGSizeMake(buttonCount * PPKeyboardCoverButtonWidth, PPKeyboardCoverButtonHeight);
+    self.bottomScrollableSegment.contentSize = CGSizeMake(self.stickerCoverButtons.count * PPKeyboardCoverButtonWidth, PPKeyboardCoverButtonHeight);
     self.bottomScrollableSegment.frame = CGRectMake(0, CGRectGetHeight(self.bounds) - SEGMENT_HEIGHT, CGRectGetWidth(self.bounds) - PPKeyboardCoverButtonWidth, SEGMENT_HEIGHT);
+    [self reloadScrollableSegment];
 
     self.sendButton.frame = CGRectMake(CGRectGetWidth(self.bounds) - PPKeyboardCoverButtonWidth, CGRectGetMinY(self.bottomScrollableSegment.frame), PPKeyboardCoverButtonWidth, PPKeyboardCoverButtonHeight);
     self.bottomBGView.frame = CGRectMake(0, CGRectGetMinY(self.bottomScrollableSegment.frame), CGRectGetWidth(self.frame), SEGMENT_HEIGHT);
@@ -95,10 +78,10 @@ static CGFloat const PPPreviewViewHeight = 137.0;
 
 #pragma mark - getter / setter
 
-- (UIScrollView *)queuingScrollView
+- (PPQueuingScrollView *)queuingScrollView
 {
     if (!_queuingScrollView) {
-        _queuingScrollView = [[UIScrollView alloc] init];
+        _queuingScrollView = [[PPQueuingScrollView alloc] init];
     }
     return _queuingScrollView;
 }
@@ -151,12 +134,24 @@ static CGFloat const PPPreviewViewHeight = 137.0;
 
 #pragma mark - private method
 
+
+
 - (PPSticker *)stickerAtIndex:(NSUInteger)index
 {
     if (self.stickers && index < self.stickers.count) {
         return self.stickers[index];
     }
     return nil;
+}
+
+- (NSUInteger)numberOfPageForSticker:(PPSticker *)sticker
+{
+    if (!sticker) {
+        return 0;
+    }
+
+    NSUInteger numberOfPage = (sticker.emojis.count / PPStickerPageViewMaxEmojiCount) + ((sticker.emojis.count % PPStickerPageViewMaxEmojiCount == 0) ? 0 : 1);
+    return numberOfPage;
 }
 
 - (void)reloadScrollableSegment
@@ -172,15 +167,22 @@ static CGFloat const PPPreviewViewHeight = 137.0;
 
     NSMutableArray *stickerCoverButtons = [[NSMutableArray alloc] init];
     for (NSUInteger index = 0, max = self.stickers.count; index < max; index++) {
+        PPSticker *sticker = self.stickers[index];
+        if (!sticker) {
+            return;
+        }
+
         PPSlideLineButton *button = [[PPSlideLineButton alloc] init];
         button.tag = index++;
         button.imageView.contentMode = UIViewContentModeScaleAspectFit;
         button.linePosition = PPSlideLineButtonPositionRight;
         button.lineColor = [UIColor pp_colorWithRGBString:@"#D1D1D1"];
         button.backgroundColor = (_currentStickerIndex == index ? [UIColor pp_colorWithRGBString:@"#EDEDED"] : [UIColor whiteColor]);
+        [button setImage:[UIImage imageNamed:sticker.coverImageName] forState:UIControlStateNormal];
         [button addTarget:self action:@selector(changeSticker:) forControlEvents:UIControlEventTouchUpInside];
         [self.bottomScrollableSegment addSubview:button];
         [stickerCoverButtons addObject:button];
+        button.frame = CGRectMake(index * PPKeyboardCoverButtonWidth, 0, PPKeyboardCoverButtonWidth, PPKeyboardCoverButtonHeight);
     }
     self.stickerCoverButtons = stickerCoverButtons;
 }
@@ -191,8 +193,18 @@ static CGFloat const PPPreviewViewHeight = 137.0;
         return;
     }
 
+    PPSticker *sticker = [self stickerAtIndex:toIndex];
+    if (!sticker) {
+        return;
+    }
+
     _currentStickerIndex = toIndex;
+
+    self.pageControl.numberOfPages = [self numberOfPageForSticker:sticker];
+    self.pageControl.currentPage = 0;
     [self reloadScrollableSegment];
+
+    [self setNeedsLayout];
 }
 
 #pragma mark - target / action
@@ -204,6 +216,47 @@ static CGFloat const PPPreviewViewHeight = 137.0;
 
 - (void)sendAction:(PPSlideLineButton *)button
 {
+}
+
+#pragma mark - PPQueuingScrollViewDelegate
+
+- (void)queuingScrollViewChangedFocusView:(PPQueuingScrollView *)queuingScrollView previousFocusView:(UIView *)previousFocusView
+{
+    PPStickerPageView *currentView = (PPStickerPageView *)self.queuingScrollView.focusView;
+    self.pageControl.currentPage = currentView.pageIndex;
+}
+
+- (UIView<PPReusablePage> *)queuingScrollView:(PPQueuingScrollView *)queuingScrollView viewBeforeView:(UIView *)view
+{
+    return [self queuingScrollView:queuingScrollView pageViewForStickerAtIndex:((PPStickerPageView *)view).pageIndex - 1];
+}
+
+- (UIView<PPReusablePage> *)queuingScrollView:(PPQueuingScrollView *)queuingScrollView viewAfterView:(UIView *)view
+{
+    return [self queuingScrollView:queuingScrollView pageViewForStickerAtIndex:((PPStickerPageView *)view).pageIndex + 1];
+}
+
+- (PPStickerPageView *)queuingScrollView:(PPQueuingScrollView *)queuingScrollView pageViewForStickerAtIndex:(NSUInteger)index
+{
+    PPSticker *sticker = [self stickerAtIndex:_currentStickerIndex];
+    if (!sticker) {
+        return nil;
+    }
+
+    NSUInteger numberOfPages = (sticker.emojis.count / PPStickerPageViewMaxEmojiCount) + ((sticker.emojis.count % PPStickerPageViewMaxEmojiCount == 0) ? 0 : 1);
+    self.pageControl.numberOfPages = numberOfPages;
+    if (index >= numberOfPages) {
+        return nil;
+    }
+
+    PPStickerPageView *pageView = [queuingScrollView reusableViewWithIdentifer:PPStickerPageViewReuseID];
+    if (!pageView) {
+        pageView = [[PPStickerPageView alloc] initWithReuseIdentifier:PPStickerPageViewReuseID];
+        pageView.delegate = self;
+    }
+    pageView.pageIndex = index;
+    [pageView configureWithSticker:sticker];
+    return pageView;
 }
 
 #pragma mark - PPStickerPageViewDelegate
@@ -242,6 +295,11 @@ static CGFloat const PPPreviewViewHeight = 137.0;
     if (window) {
         [window addSubview:self.emojiPreviewView];
     }
+}
+
+- (void)stickerPageViewHideEmojiPreviewView:(PPStickerPageView *)stickerKeyboard
+{
+    [self.emojiPreviewView removeFromSuperview];
 }
 
 @end

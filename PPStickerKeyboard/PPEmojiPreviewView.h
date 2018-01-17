@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 @class PPEmoji;
 
-@interface PPEmojiPreviewView : UIView
+@interface PPEmojiPreviewView : UIImageView
 
 @property (nonatomic, strong) PPEmoji *emoji;
 

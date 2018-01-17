@@ -7,9 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "PPQueuingScrollView.h"
 @class PPStickerPageView;
 @class PPSticker;
 @class PPEmoji;
+
+extern NSUInteger const PPStickerPageViewMaxEmojiCount;
 
 @protocol PPStickerPageViewDelegate <NSObject>
 
@@ -20,6 +23,13 @@
 
 @end
 
-@interface PPStickerPageView : UIView
+@interface PPStickerPageView : UIView <PPReusablePage>
+
+@property (nonatomic, weak) id<PPStickerPageViewDelegate> delegate;
+@property (nonatomic, assign) NSUInteger pageIndex;
+
+- (id)initWithReuseIdentifier:(NSString *)reuseIdentifier;
+
+- (void)configureWithSticker:(PPSticker *)sticker;
 
 @end
