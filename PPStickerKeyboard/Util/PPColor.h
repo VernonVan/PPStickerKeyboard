@@ -1,5 +1,5 @@
 //
-//  PPUIColor.h
+//  PPColor.h
 //  PPStickerKeyboard
 //
 //  Created by Vernon on 2018/1/15.

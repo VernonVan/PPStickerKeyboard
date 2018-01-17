@@ -8,6 +8,7 @@
 
 #import "PPCommentComposeBar.h"
 #import "PPStickerKeyboard.h"
+#import "PPStickerDataManager.h"
 #import "PPScreen.h"
 #import "PPUIColor.h"
 
@@ -267,29 +268,6 @@ static CGFloat const PPCommentBarCountFontSize = 14.0;
     // 匹配表情
     NSArray<PPStickerMatchingResult *> *matches = [self replaceEmojiForAttributedString:attributedComment];
 
-    // 超出字数置灰
-    if (plainText.length > PPCommentMaxWordCount) {
-        if (self.isShowEmoji) {
-            NSUInteger cutLength = 0;
-            for (PPStickerMatchingResult *result in matches) {
-                if (result.range.location >= PPCommentMaxWordCount) {
-                    break;
-                }
-                if (result.emojiImage) {
-                    cutLength += result.range.length - 1;
-                }
-            }
-            NSUInteger loc = PPCommentMaxWordCount - cutLength;
-            if (loc < attributedComment.length) {
-                NSRange grayTextRange = NSMakeRange(loc, attributedComment.length - loc);
-                [attributedComment addAttributes:@{ NSForegroundColorAttributeName: contentBeyondColor } range:grayTextRange];
-            }
-        } else {
-            NSRange grayTextRange = NSMakeRange(PPCommentMaxWordCount, attributedComment.length - PPCommentMaxWordCount);
-            [attributedComment setAttributes:@{ NSForegroundColorAttributeName: contentBeyondColor, NSFontAttributeName: [self contentFont] } range:grayTextRange];
-        }
-    }
-
     NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
     paragraphStyle.lineSpacing = PPCommentBarCommentLineSpacing;
     [attributedComment addAttribute:NSParagraphStyleAttributeName value:paragraphStyle range:attributedComment.yy_rangeOfAll];
@@ -311,7 +289,7 @@ static CGFloat const PPCommentBarCountFontSize = 14.0;
     NSUInteger offset = 0;
     if (matchingResults && matchingResults.count) {
         for (PPStickerMatchingResult *result in matchingResults) {
-            if (self.isShowEmoji && result.emojiImage) {
+            if (result.emojiImage) {
                 CGFloat emojiHeight = emojiBaseFont.lineHeight;
                 NSTextAttachment *attachment = [[NSTextAttachment alloc] init];
                 attachment.image = result.emojiImage;
@@ -324,17 +302,6 @@ static CGFloat const PPCommentBarCountFontSize = 14.0;
                 NSRange actualRange = NSMakeRange(result.range.location - offset, result.backedDescription.length);
                 [attributedString replaceCharactersInRange:actualRange withAttributedString:emojiAttributedString];
                 offset += result.backedDescription.length - emojiAttributedString.length;
-            } else {
-                NSMutableAttributedString *attributedDescription = [[NSMutableAttributedString alloc] initWithString:result.showingDescription attributes:attributes];
-                if (self.isShowEmoji) {
-                    [attributedDescription yy_setTextBackedString:[YYTextBackedString stringWithString:result.backedDescription] range:NSMakeRange(0, attributedDescription.length)];
-                }
-                if (!attributedDescription) {
-                    continue;
-                }
-                NSRange actualRange = NSMakeRange(result.range.location - offset, result.backedDescription.length);
-                [attributedString replaceCharactersInRange:actualRange withAttributedString:attributedDescription];
-                offset += result.backedDescription.length - result.showingDescription.length;
             }
         }
     }

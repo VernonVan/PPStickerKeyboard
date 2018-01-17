@@ -92,39 +92,34 @@
     return nil;
 }
 
-- (void)replaceEmojiForAttributedString:(NSMutableAttributedString *)attributedString
+- (void)replaceEmojiForAttributedString:(NSMutableAttributedString *)attributedString font:(UIFont *)font
 {
     if (!attributedString || !attributedString.length) {
         return;
     }
 
-    NSArray<PPStickerMatchingResult *> *matchingResults = [self matchingEmojiForString:attributedString.string isShowEmoji:isShowEmoji];
-    NSDictionary<NSString *, id> *attributes = attributedString.yy_attributes;
-    UIFont *font = emojiBaseFont ? emojiBaseFont : attributedString.yy_font;
+    NSArray<PPStickerMatchingResult *> *matchingResults = [self matchingEmojiForString:attributedString.string];
+
     NSUInteger offset = 0;
     if (matchingResults && matchingResults.count) {
         for (PPStickerMatchingResult *result in matchingResults) {
-            if (isShowEmoji && result.emojiImage) {
-                CGFloat fontHeight = font.lineHeight;
-                NSMutableAttributedString *emojiAttributedString = [NSMutableAttributedString yy_attachmentStringWithContent:result.emojiImage contentMode:UIViewContentModeScaleAspectFit attachmentSize:CGSizeMake(fontHeight, fontHeight) alignToFont:font alignment:YYTextVerticalAlignmentCenter];
-                [emojiAttributedString yy_setTextBackedString:[YYTextBackedString stringWithString:result.backedDescription] range:NSMakeRange(0, emojiAttributedString.length)];
-                if (!emojiAttributedString) {
-                    continue;
+            if (matchingResults && matchingResults.count) {
+                for (PPStickerMatchingResult *result in matchingResults) {
+                    if (result.emojiImage) {
+                        CGFloat emojiHeight = font.lineHeight;
+                        NSTextAttachment *attachment = [[NSTextAttachment alloc] init];
+                        attachment.image = result.emojiImage;
+                        attachment.bounds = CGRectMake(0, font.descender, emojiHeight, emojiHeight);
+                        NSMutableAttributedString *emojiAttributedString = [[NSMutableAttributedString alloc] initWithAttributedString:[NSAttributedString attributedStringWithAttachment:attachment]];
+                        [emojiAttributedString yy_setTextBackedString:[YYTextBackedString stringWithString:result.backedDescription] range:NSMakeRange(0, emojiAttributedString.length)];
+                        if (!emojiAttributedString) {
+                            continue;
+                        }
+                        NSRange actualRange = NSMakeRange(result.range.location - offset, result.backedDescription.length);
+                        [attributedString replaceCharactersInRange:actualRange withAttributedString:emojiAttributedString];
+                        offset += result.backedDescription.length - emojiAttributedString.length;
+                    }
                 }
-                NSRange actualRange = NSMakeRange(result.range.location - offset, result.backedDescription.length);
-                [attributedString replaceCharactersInRange:actualRange withAttributedString:emojiAttributedString];
-                offset += result.backedDescription.length - emojiAttributedString.length;
-            } else {
-                NSMutableAttributedString *attributedDescription = [[NSMutableAttributedString alloc] initWithString:result.showingDescription attributes:attributes];
-                if (isShowEmoji) {
-                    [attributedDescription yy_setTextBackedString:[YYTextBackedString stringWithString:result.backedDescription] range:NSMakeRange(0, attributedDescription.length)];
-                }
-                if (!attributedDescription) {
-                    continue;
-                }
-                NSRange actualRange = NSMakeRange(result.range.location - offset, result.backedDescription.length);
-                [attributedString replaceCharactersInRange:actualRange withAttributedString:attributedDescription];
-                offset += result.backedDescription.length - result.showingDescription.length;
             }
         }
     }

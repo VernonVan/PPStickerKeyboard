@@ -19,7 +19,7 @@
 		AD703F19200B9D7E002F6F33 /* PPEmoji.m in Sources */ = {isa = PBXBuildFile; fileRef = AD703F18200B9D7E002F6F33 /* PPEmoji.m */; };
 		AD703F1C200BAE38002F6F33 /* PPEmojiPreviewView.m in Sources */ = {isa = PBXBuildFile; fileRef = AD703F1B200BAE38002F6F33 /* PPEmojiPreviewView.m */; };
 		AD703F1F200BAE9F002F6F33 /* PPSlideLineButton.m in Sources */ = {isa = PBXBuildFile; fileRef = AD703F1E200BAE9F002F6F33 /* PPSlideLineButton.m */; };
-		AD9010CA200C3F9B004F8F0C /* PPUIColor.m in Sources */ = {isa = PBXBuildFile; fileRef = AD9010C9200C3F9B004F8F0C /* PPUIColor.m */; };
+		AD9010CA200C3F9B004F8F0C /* PPColor.m in Sources */ = {isa = PBXBuildFile; fileRef = AD9010C9200C3F9B004F8F0C /* PPColor.m */; };
 		AD9010CD200C416C004F8F0C /* PPScreen.m in Sources */ = {isa = PBXBuildFile; fileRef = AD9010CC200C416C004F8F0C /* PPScreen.m */; };
 		AD9010D0200C9E31004F8F0C /* PPStickerPageView.m in Sources */ = {isa = PBXBuildFile; fileRef = AD9010CF200C9E31004F8F0C /* PPStickerPageView.m */; };
 		AD9010D5200CB426004F8F0C /* InnerStickersInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = AD9010D4200CB426004F8F0C /* InnerStickersInfo.plist */; };
@@ -27,6 +27,8 @@
 		ADCC4BF2200F369E0036905D /* PPCommentComposeBar.m in Sources */ = {isa = PBXBuildFile; fileRef = ADCC4BF0200F369D0036905D /* PPCommentComposeBar.m */; };
 		ADCC4BF3200F369E0036905D /* PPCommentComposeController.m in Sources */ = {isa = PBXBuildFile; fileRef = ADCC4BF1200F369E0036905D /* PPCommentComposeController.m */; };
 		ADCC4BF9200F4B360036905D /* PPStickerDataManager.m in Sources */ = {isa = PBXBuildFile; fileRef = ADCC4BF8200F4B350036905D /* PPStickerDataManager.m */; };
+		ADCC4BFC200F5D300036905D /* PPAttributedString.m in Sources */ = {isa = PBXBuildFile; fileRef = ADCC4BFB200F5D300036905D /* PPAttributedString.m */; };
+		ADCC4BFF200F5E0A0036905D /* PPTextBackedString.m in Sources */ = {isa = PBXBuildFile; fileRef = ADCC4BFE200F5E0A0036905D /* PPTextBackedString.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -51,8 +53,8 @@
 		AD703F1B200BAE38002F6F33 /* PPEmojiPreviewView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PPEmojiPreviewView.m; sourceTree = "<group>"; };
 		AD703F1D200BAE9F002F6F33 /* PPSlideLineButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PPSlideLineButton.h; sourceTree = "<group>"; };
 		AD703F1E200BAE9F002F6F33 /* PPSlideLineButton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PPSlideLineButton.m; sourceTree = "<group>"; };
-		AD9010C8200C3F9B004F8F0C /* PPUIColor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PPUIColor.h; sourceTree = "<group>"; };
-		AD9010C9200C3F9B004F8F0C /* PPUIColor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PPUIColor.m; sourceTree = "<group>"; };
+		AD9010C8200C3F9B004F8F0C /* PPColor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PPColor.h; sourceTree = "<group>"; };
+		AD9010C9200C3F9B004F8F0C /* PPColor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PPColor.m; sourceTree = "<group>"; };
 		AD9010CB200C416C004F8F0C /* PPScreen.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PPScreen.h; sourceTree = "<group>"; };
 		AD9010CC200C416C004F8F0C /* PPScreen.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PPScreen.m; sourceTree = "<group>"; };
 		AD9010CE200C9E31004F8F0C /* PPStickerPageView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PPStickerPageView.h; sourceTree = "<group>"; };
@@ -67,6 +69,10 @@
 		ADCC4BF1200F369E0036905D /* PPCommentComposeController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PPCommentComposeController.m; sourceTree = "<group>"; };
 		ADCC4BF7200F4B350036905D /* PPStickerDataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PPStickerDataManager.h; sourceTree = "<group>"; };
 		ADCC4BF8200F4B350036905D /* PPStickerDataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PPStickerDataManager.m; sourceTree = "<group>"; };
+		ADCC4BFA200F5D300036905D /* PPAttributedString.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PPAttributedString.h; sourceTree = "<group>"; };
+		ADCC4BFB200F5D300036905D /* PPAttributedString.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PPAttributedString.m; sourceTree = "<group>"; };
+		ADCC4BFD200F5E0A0036905D /* PPTextBackedString.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PPTextBackedString.h; sourceTree = "<group>"; };
+		ADCC4BFE200F5E0A0036905D /* PPTextBackedString.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PPTextBackedString.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -139,10 +145,14 @@
 				ADCC4BED200F306D0036905D /* PPReusablePage.h */,
 				ADCC4BEB200F30430036905D /* PPQueuingScrollView.h */,
 				ADCC4BEA200F30430036905D /* PPQueuingScrollView.m */,
-				AD9010C8200C3F9B004F8F0C /* PPUIColor.h */,
-				AD9010C9200C3F9B004F8F0C /* PPUIColor.m */,
+				AD9010C8200C3F9B004F8F0C /* PPColor.h */,
+				AD9010C9200C3F9B004F8F0C /* PPColor.m */,
 				AD9010CB200C416C004F8F0C /* PPScreen.h */,
 				AD9010CC200C416C004F8F0C /* PPScreen.m */,
+				ADCC4BFD200F5E0A0036905D /* PPTextBackedString.h */,
+				ADCC4BFE200F5E0A0036905D /* PPTextBackedString.m */,
+				ADCC4BFA200F5D300036905D /* PPAttributedString.h */,
+				ADCC4BFB200F5D300036905D /* PPAttributedString.m */,
 			);
 			path = Util;
 			sourceTree = "<group>";
@@ -224,8 +234,9 @@
 				ADCC4BF3200F369E0036905D /* PPCommentComposeController.m in Sources */,
 				ADCC4BEC200F30430036905D /* PPQueuingScrollView.m in Sources */,
 				ADCC4BF2200F369E0036905D /* PPCommentComposeBar.m in Sources */,
+				ADCC4BFF200F5E0A0036905D /* PPTextBackedString.m in Sources */,
 				AD703F10200B9CDF002F6F33 /* PPStickerKeyboard.m in Sources */,
-				AD9010CA200C3F9B004F8F0C /* PPUIColor.m in Sources */,
+				AD9010CA200C3F9B004F8F0C /* PPColor.m in Sources */,
 				AD9010D0200C9E31004F8F0C /* PPStickerPageView.m in Sources */,
 				AD608EF4200AF90500572A7E /* ViewController.m in Sources */,
 				AD9010CD200C416C004F8F0C /* PPScreen.m in Sources */,
@@ -234,6 +245,7 @@
 				AD703F16200B9D6F002F6F33 /* PPSticker.m in Sources */,
 				AD608EFF200AF90500572A7E /* main.m in Sources */,
 				AD703F19200B9D7E002F6F33 /* PPEmoji.m in Sources */,
+				ADCC4BFC200F5D300036905D /* PPAttributedString.m in Sources */,
 				AD608EF1200AF90500572A7E /* AppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
