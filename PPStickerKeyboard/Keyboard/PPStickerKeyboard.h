@@ -7,8 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "PPSticker.h"
 @class PPStickerKeyboard;
-@class PPEmoji;
 
 @protocol PPStickerKeyboardDelegate <NSObject>
 

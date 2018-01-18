@@ -8,6 +8,7 @@
 
 #import "PPStickerDataManager.h"
 #import "PPSticker.h"
+#import "PPUtil.h"
 
 @implementation PPStickerMatchingResult
 @end
@@ -100,26 +101,22 @@
 
     NSArray<PPStickerMatchingResult *> *matchingResults = [self matchingEmojiForString:attributedString.string];
 
-    NSUInteger offset = 0;
     if (matchingResults && matchingResults.count) {
+        NSUInteger offset = 0;
         for (PPStickerMatchingResult *result in matchingResults) {
-            if (matchingResults && matchingResults.count) {
-                for (PPStickerMatchingResult *result in matchingResults) {
-                    if (result.emojiImage) {
-                        CGFloat emojiHeight = font.lineHeight;
-                        NSTextAttachment *attachment = [[NSTextAttachment alloc] init];
-                        attachment.image = result.emojiImage;
-                        attachment.bounds = CGRectMake(0, font.descender, emojiHeight, emojiHeight);
-                        NSMutableAttributedString *emojiAttributedString = [[NSMutableAttributedString alloc] initWithAttributedString:[NSAttributedString attributedStringWithAttachment:attachment]];
-                        [emojiAttributedString yy_setTextBackedString:[YYTextBackedString stringWithString:result.backedDescription] range:NSMakeRange(0, emojiAttributedString.length)];
-                        if (!emojiAttributedString) {
-                            continue;
-                        }
-                        NSRange actualRange = NSMakeRange(result.range.location - offset, result.backedDescription.length);
-                        [attributedString replaceCharactersInRange:actualRange withAttributedString:emojiAttributedString];
-                        offset += result.backedDescription.length - emojiAttributedString.length;
-                    }
+            if (result.emojiImage) {
+                CGFloat emojiHeight = font.lineHeight;
+                NSTextAttachment *attachment = [[NSTextAttachment alloc] init];
+                attachment.image = result.emojiImage;
+                attachment.bounds = CGRectMake(0, font.descender, emojiHeight, emojiHeight);
+                NSMutableAttributedString *emojiAttributedString = [[NSMutableAttributedString alloc] initWithAttributedString:[NSAttributedString attributedStringWithAttachment:attachment]];
+                [emojiAttributedString pp_setTextBackedString:[PPTextBackedString stringWithString:result.showingDescription] range:NSMakeRange(0, emojiAttributedString.length)];
+                if (!emojiAttributedString) {
+                    continue;
                 }
+                NSRange actualRange = NSMakeRange(result.range.location - offset, result.showingDescription.length);
+                [attributedString replaceCharactersInRange:actualRange withAttributedString:emojiAttributedString];
+                offset += result.showingDescription.length - emojiAttributedString.length;
             }
         }
     }

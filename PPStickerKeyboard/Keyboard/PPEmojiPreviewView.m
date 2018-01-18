@@ -8,7 +8,7 @@
 
 #import "PPEmojiPreviewView.h"
 #import "PPEmoji.h"
-#import "PPUIColor.h"
+#import "PPUtil.h"
 
 static CGFloat PPEmojiPreviewImageTopPadding = 18.0;
 static CGFloat PPEmojiPreviewImageLeftRightPadding = 22.0;

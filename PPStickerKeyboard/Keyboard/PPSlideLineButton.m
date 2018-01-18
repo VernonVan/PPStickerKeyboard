@@ -7,7 +7,7 @@
 //
 
 #import "PPSlideLineButton.h"
-#import "PPScreen.h"
+#import "PPUtil.h"
 
 static CGFloat const PPSlideLineHeight = 22.0;
 

@@ -7,9 +7,18 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "PPTextBackedString.h"
 
 @interface NSAttributedString (PPAddition)
 
+- (NSRange)pp_rangeOfAll;
+
 - (nullable NSString *)pp_plainTextForRange:(NSRange)range;
+
+@end
+
+@interface NSMutableAttributedString (PPAddition)
+
+- (void)pp_setTextBackedString:(nullable PPTextBackedString *)textBackedString range:(NSRange)range;
 
 @end

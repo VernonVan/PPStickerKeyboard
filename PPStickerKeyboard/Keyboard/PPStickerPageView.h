@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "PPQueuingScrollView.h"
+#import "PPUtil.h"
 @class PPStickerPageView;
 @class PPSticker;
 @class PPEmoji;

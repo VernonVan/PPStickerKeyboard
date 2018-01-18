@@ -7,13 +7,11 @@
 //
 
 #import "PPStickerKeyboard.h"
-#import "PPSticker.h"
 #import "PPEmojiPreviewView.h"
 #import "PPSlideLineButton.h"
-#import "PPUIColor.h"
-#import "PPScreen.h"
 #import "PPStickerPageView.h"
-#import "PPQueuingScrollView.h"
+#import "PPStickerDataManager.h"
+#import "PPUtil.h"
 
 static CGFloat const PPStickerTopInset = 12.0;
 static CGFloat const PPStickerScrollViewHeight = 132.0;
@@ -47,6 +45,7 @@ static NSString *const PPStickerPageViewReuseID = @"PPStickerPageView";
 {
     if (self = [super initWithFrame:frame]) {
         _currentStickerIndex = 0;
+        _stickers = [PPStickerDataManager sharedInstance].allStickers.copy;
 
         [self addSubview:self.queuingScrollView];
         [self addSubview:self.pageControl];
@@ -54,7 +53,6 @@ static NSString *const PPStickerPageViewReuseID = @"PPStickerPageView";
         [self addSubview:self.sendButton];
         [self addSubview:self.bottomScrollableSegment];
 
-        [self initStickers];
         [self changeStickerToIndex:0];
     }
     return self;
@@ -134,8 +132,6 @@ static NSString *const PPStickerPageViewReuseID = @"PPStickerPageView";
 
 #pragma mark - private method
 
-
-
 - (PPSticker *)stickerAtIndex:(NSUInteger)index
 {
     if (self.stickers && index < self.stickers.count) {
@@ -200,11 +196,8 @@ static NSString *const PPStickerPageViewReuseID = @"PPStickerPageView";
 
     _currentStickerIndex = toIndex;
 
-    self.pageControl.numberOfPages = [self numberOfPageForSticker:sticker];
-    self.pageControl.currentPage = 0;
-    [self reloadScrollableSegment];
-
-    [self setNeedsLayout];
+    PPStickerPageView *pageView = [self queuingScrollView:self.queuingScrollView pageViewForStickerAtIndex:0];
+    [self.queuingScrollView displayView:pageView];
 }
 
 #pragma mark - target / action
@@ -216,6 +209,9 @@ static NSString *const PPStickerPageViewReuseID = @"PPStickerPageView";
 
 - (void)sendAction:(PPSlideLineButton *)button
 {
+    if (self.delegate && [self.delegate respondsToSelector:@selector(stickerKeyboardDidClickSendButton:)]) {
+        [self.delegate stickerKeyboardDidClickSendButton:self];
+    }
 }
 
 #pragma mark - PPQueuingScrollViewDelegate
@@ -243,7 +239,7 @@ static NSString *const PPStickerPageViewReuseID = @"PPStickerPageView";
         return nil;
     }
 
-    NSUInteger numberOfPages = (sticker.emojis.count / PPStickerPageViewMaxEmojiCount) + ((sticker.emojis.count % PPStickerPageViewMaxEmojiCount == 0) ? 0 : 1);
+    NSUInteger numberOfPages = [self numberOfPageForSticker:sticker];
     self.pageControl.numberOfPages = numberOfPages;
     if (index >= numberOfPages) {
         return nil;
@@ -278,11 +274,6 @@ static NSString *const PPStickerPageViewReuseID = @"PPStickerPageView";
 - (void)stickerPageView:(PPStickerPageView *)stickerKeyboard showEmojiPreviewViewWithEmoji:(PPEmoji *)emoji buttonFrame:(CGRect)buttonFrame
 {
     if (!emoji) {
-        return;
-    }
-
-    UIImage *emojiImage = [UIImage imageNamed:emoji.imageName];
-    if (!emojiImage) {
         return;
     }
 

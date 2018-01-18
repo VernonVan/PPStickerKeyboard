@@ -34,6 +34,6 @@
  *
  * @param attributedString 可能包含表情包的attributedString
  */
-- (void)replaceEmojiForAttributedString:(NSMutableAttributedString *)attributedString font:();
+- (void)replaceEmojiForAttributedString:(NSMutableAttributedString *)attributedString font:(UIFont *)font;
 
 @end

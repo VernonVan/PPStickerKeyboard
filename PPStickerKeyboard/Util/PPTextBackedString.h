@@ -8,12 +8,12 @@
 
 #import <Foundation/Foundation.h>
 
-extern NSString *const PPTextBackedStringAttributeName;
+extern NSString * _Nonnull const PPTextBackedStringAttributeName;
 
 @interface PPTextBackedString : NSObject <NSCoding, NSCopying>
 
 @property (nullable, nonatomic, copy) NSString *string;
 
-+ (instancetype)stringWithString:(nullable NSString *)string;
++ (nullable instancetype)stringWithString:(nullable NSString *)string;
 
 @end
