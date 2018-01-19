@@ -26,7 +26,7 @@ static NSString *const PPStickerPageViewReuseID = @"PPStickerPageView";
 
 #define SEGMENT_HEIGHT ([UIScreen pp_isIPhoneX] ? 34.0 + 44.0 : 44.0)
 
-@interface PPStickerKeyboard () <PPStickerPageViewDelegate>
+@interface PPStickerKeyboard () <PPStickerPageViewDelegate, PPQueuingScrollViewDelegate>
 @property (nonatomic, strong) NSArray<PPSticker *> *stickers;
 @property (nonatomic, strong) PPQueuingScrollView *queuingScrollView;
 @property (nonatomic, strong) UIPageControl *pageControl;
@@ -47,6 +47,7 @@ static NSString *const PPStickerPageViewReuseID = @"PPStickerPageView";
         _currentStickerIndex = 0;
         _stickers = [PPStickerDataManager sharedInstance].allStickers.copy;
 
+        self.backgroundColor = [UIColor pp_colorWithRGBString:@"#F4F4F4"];
         [self addSubview:self.queuingScrollView];
         [self addSubview:self.pageControl];
         [self addSubview:self.bottomBGView];
@@ -80,6 +81,9 @@ static NSString *const PPStickerPageViewReuseID = @"PPStickerPageView";
 {
     if (!_queuingScrollView) {
         _queuingScrollView = [[PPQueuingScrollView alloc] init];
+        _queuingScrollView.delegate = self;
+        _queuingScrollView.pagePadding = 0;
+        _queuingScrollView.alwaysBounceHorizontal = NO;
     }
     return _queuingScrollView;
 }
@@ -89,6 +93,8 @@ static NSString *const PPStickerPageViewReuseID = @"PPStickerPageView";
     if (!_pageControl) {
         _pageControl = [[UIPageControl alloc] init];
         _pageControl.hidesForSinglePage = YES;
+        _pageControl.currentPageIndicatorTintColor = [UIColor pp_colorWithRGBString:@"#F5A623"];
+        _pageControl.pageIndicatorTintColor = [UIColor pp_colorWithRGBString:@"#BCBCBC"];
     }
     return _pageControl;
 }
@@ -98,6 +104,7 @@ static NSString *const PPStickerPageViewReuseID = @"PPStickerPageView";
     if (!_sendButton) {
         _sendButton = [[PPSlideLineButton alloc] init];
         [_sendButton setTitle:@"发送" forState:UIControlStateNormal];
+        [_sendButton setTitleColor:[UIColor pp_colorWithRGBString:@"#2196F3"] forState:UIControlStateNormal];
         _sendButton.linePosition = PPSlideLineButtonPositionLeft;
         [_sendButton addTarget:self action:@selector(sendAction:) forControlEvents:UIControlEventTouchUpInside];
     }
@@ -118,6 +125,7 @@ static NSString *const PPStickerPageViewReuseID = @"PPStickerPageView";
 {
     if (!_bottomBGView) {
         _bottomBGView = [[UIView alloc] init];
+        _bottomBGView.backgroundColor = [UIColor whiteColor];
     }
     return _bottomBGView;
 }
@@ -169,12 +177,12 @@ static NSString *const PPStickerPageViewReuseID = @"PPStickerPageView";
         }
 
         PPSlideLineButton *button = [[PPSlideLineButton alloc] init];
-        button.tag = index++;
+        button.tag = index;
         button.imageView.contentMode = UIViewContentModeScaleAspectFit;
         button.linePosition = PPSlideLineButtonPositionRight;
         button.lineColor = [UIColor pp_colorWithRGBString:@"#D1D1D1"];
-        button.backgroundColor = (_currentStickerIndex == index ? [UIColor pp_colorWithRGBString:@"#EDEDED"] : [UIColor whiteColor]);
-        [button setImage:[UIImage imageNamed:sticker.coverImageName] forState:UIControlStateNormal];
+        button.backgroundColor = (_currentStickerIndex == index ? [UIColor pp_colorWithRGBString:@"#EDEDED"] : [UIColor clearColor]);
+        [button setImage:[self emojiImageWithName:sticker.coverImageName] forState:UIControlStateNormal];
         [button addTarget:self action:@selector(changeSticker:) forControlEvents:UIControlEventTouchUpInside];
         [self.bottomScrollableSegment addSubview:button];
         [stickerCoverButtons addObject:button];
@@ -183,9 +191,18 @@ static NSString *const PPStickerPageViewReuseID = @"PPStickerPageView";
     self.stickerCoverButtons = stickerCoverButtons;
 }
 
+- (UIImage *)emojiImageWithName:(NSString *)name
+{
+    if (!name.length) {
+        return nil;
+    }
+
+    return [UIImage imageNamed:[@"Sticker.bundle" stringByAppendingPathComponent:name]];
+}
+
 - (void)changeStickerToIndex:(NSUInteger)toIndex
 {
-    if (toIndex >= self.stickerCoverButtons.count) {
+    if (toIndex >= self.stickers.count) {
         return;
     }
 
@@ -198,6 +215,8 @@ static NSString *const PPStickerPageViewReuseID = @"PPStickerPageView";
 
     PPStickerPageView *pageView = [self queuingScrollView:self.queuingScrollView pageViewForStickerAtIndex:0];
     [self.queuingScrollView displayView:pageView];
+    
+    [self reloadScrollableSegment];
 }
 
 #pragma mark - target / action

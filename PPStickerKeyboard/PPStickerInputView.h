@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-@class PPStickerTextView;
+@class PPStickerInputView;
 
 typedef NS_ENUM (NSUInteger, PPKeyboardType) {
     PPKeyboardTypeNone = 0,
@@ -15,23 +15,25 @@ typedef NS_ENUM (NSUInteger, PPKeyboardType) {
     PPKeyboardTypeSticker,
 };
 
-@protocol PPStickerTextViewDelegate <NSObject>
+@protocol PPStickerInputViewDelegate <NSObject>
 
 @optional
 
-- (void)stickerTextViewDidEndEditing:(PPStickerTextView *)composeBar;
+- (BOOL)stickerInputViewShouldBeginEditing:(PPStickerInputView *)inputView;
 
-- (void)stickerTextViewDidPressReturnKey:(PPStickerTextView *)composeBar;
+- (void)stickerInputViewDidEndEditing:(PPStickerInputView *)inputView;
 
-- (void)stickerTextViewDidChange:(PPStickerTextView *)composeBar;
+- (void)stickerInputViewDidPressReturnKey:(PPStickerInputView *)inputView;
 
-- (void)stickerTextViewDidClickSendButton:(PPStickerTextView *)composeBar;
+- (void)stickerInputViewDidChange:(PPStickerInputView *)inputView;
+
+- (void)stickerInputViewDidClickSendButton:(PPStickerInputView *)inputView;
 
 @end
 
-@interface PPStickerTextView : UIView
+@interface PPStickerInputView : UIView
 
-@property (nonatomic, weak) id<PPStickerTextViewDelegate> delegate;
+@property (nonatomic, weak) id<PPStickerInputViewDelegate> delegate;
 
 @property (nonatomic, strong, readonly) NSString *plainText;
 

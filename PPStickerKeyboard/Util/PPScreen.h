@@ -19,6 +19,8 @@ typedef NS_ENUM (NSInteger, ZUIScreenPhysicalSize) {
 
 CGFloat PPOnePixelToPoint(void);
 
+CGRect PPRectInsetEdges(CGRect rect, UIEdgeInsets edgeInsets);
+
 @interface UIScreen (PPAddition)
 
 + (BOOL)pp_isIPhoneX;

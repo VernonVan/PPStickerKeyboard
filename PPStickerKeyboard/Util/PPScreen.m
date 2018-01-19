@@ -19,6 +19,25 @@ CGFloat PPOnePixelToPoint(void)
     return onePixelWidth;
 }
 
+CGRect PPRectInsetEdges(CGRect rect, UIEdgeInsets edgeInsets)
+{
+    rect.origin.x += edgeInsets.left;
+    rect.size.width -= edgeInsets.left + edgeInsets.right;
+    
+    rect.origin.y += edgeInsets.top;
+    rect.size.height -= edgeInsets.top + edgeInsets.bottom;
+    
+    if (rect.size.width < 0) {
+        rect.size.width = 0;
+    }
+    
+    if (rect.size.height < 0) {
+        rect.size.height = 0;
+    }
+    
+    return rect;
+}
+
 @implementation UIScreen (PPAddition)
 
 - (ZUIScreenPhysicalSize)zui_physicalSize

@@ -76,15 +76,15 @@
     if (results && results.count) {
         NSMutableArray *emojiMatchingResults = [[NSMutableArray alloc] init];
         for (NSTextCheckingResult *result in results) {
-            NSString *emojiSubString = [string substringWithRange:result.range];
-            NSString *showingDescription = [emojiSubString substringFromIndex:1];       // 去掉[
-            showingDescription = [showingDescription substringWithRange:NSMakeRange(0, showingDescription.length - 1)];    // 去掉]
-            PPEmoji *emoji = [self emojiWithEmojiDescription:showingDescription];
+            NSString *showingDescription = [string substringWithRange:result.range];
+            NSString *emojiSubString = [showingDescription substringFromIndex:1];       // 去掉[
+            emojiSubString = [emojiSubString substringWithRange:NSMakeRange(0, emojiSubString.length - 1)];    // 去掉]
+            PPEmoji *emoji = [self emojiWithEmojiDescription:emojiSubString];
             if (emoji) {
                 PPStickerMatchingResult *emojiMatchingResult = [[PPStickerMatchingResult alloc] init];
                 emojiMatchingResult.range = result.range;
-                emojiMatchingResult.showingDescription = emojiSubString;
-                emojiMatchingResult.emojiImage = [UIImage imageNamed:showingDescription];
+                emojiMatchingResult.showingDescription = showingDescription;
+                emojiMatchingResult.emojiImage = [UIImage imageNamed:[@"Sticker.bundle" stringByAppendingPathComponent:emoji.imageName]];
                 [emojiMatchingResults addObject:emojiMatchingResult];
             }
         }

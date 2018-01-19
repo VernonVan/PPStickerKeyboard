@@ -19,7 +19,7 @@ static CGFloat const PPStickerPageViewEmojiButtonVerticalMargin = 16.0;
 @property (nonatomic, strong) UIButton *deleteButton;
 @property (nonatomic, strong) NSTimer *deleteEmojiTimer;
 @property (nonatomic, strong) PPSticker *sticker;
-@property (nonatomic, strong) NSArray<UIButton *> *emojiButtons;
+@property (nonatomic, strong) NSArray<PPButton *> *emojiButtons;
 @end
 
 @implementation PPStickerPageView
@@ -30,10 +30,10 @@ static CGFloat const PPStickerPageViewEmojiButtonVerticalMargin = 16.0;
 
 - (id)initWithFrame:(CGRect)frame reuseIdentifier:(NSString *)reuseIdentifier
 {
-    if (self = [super init]) {
+    if (self = [super initWithFrame:frame]) {
         NSMutableArray *emojiButtons = [[NSMutableArray alloc] init];
         for (NSUInteger i = 0; i < PPStickerPageViewMaxEmojiCount; i++) {
-            UIButton *button = [[UIButton alloc] init];
+            PPButton *button = [[PPButton alloc] init];
             button.tag = i;
             [button addTarget:self action:@selector(didClickEmojiButton:) forControlEvents:UIControlEventTouchUpInside];
             UILongPressGestureRecognizer *longPressRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(didLongPressEmoji:)];
@@ -76,7 +76,7 @@ static CGFloat const PPStickerPageViewEmojiButtonVerticalMargin = 16.0;
 
     CGFloat screenWidth = CGRectGetWidth(self.bounds);
     CGFloat spaceBetweenButtons = (screenWidth - PPStickerPageViewButtonPerLine * PPStickerPageViewEmojiButtonLength) / (PPStickerPageViewButtonPerLine + 1);
-    for (UIButton *button in self.emojiButtons) {
+    for (PPButton *button in self.emojiButtons) {
         NSUInteger index = button.tag;
         if (index > self.sticker.emojis.count) {
             break;
@@ -88,6 +88,7 @@ static CGFloat const PPStickerPageViewEmojiButtonVerticalMargin = 16.0;
         CGFloat minX = row * PPStickerPageViewEmojiButtonLength + (row + 1) * spaceBetweenButtons;
         CGFloat minY = line * (PPStickerPageViewEmojiButtonLength + PPStickerPageViewEmojiButtonVerticalMargin);
         button.frame = CGRectMake(minX, minY, PPStickerPageViewEmojiButtonLength, PPStickerPageViewEmojiButtonLength);
+        button.touchInsets = UIEdgeInsetsMake(-PPStickerPageViewEmojiButtonVerticalMargin / 2, -spaceBetweenButtons / 2, -PPStickerPageViewEmojiButtonVerticalMargin / 2, -spaceBetweenButtons / 2);
     }
 
     CGFloat minDeleteX = screenWidth - spaceBetweenButtons - PPStickerPageViewEmojiButtonLength;
@@ -109,8 +110,8 @@ static CGFloat const PPStickerPageViewEmojiButtonVerticalMargin = 16.0;
             break;
         }
 
-        UIButton *button = self.emojiButtons[index];
-        [button setImage:[UIImage imageNamed:emoji.imageName] forState:UIControlStateNormal];
+        PPButton *button = self.emojiButtons[index];
+        [button setImage:[self emojiImageWithName:emoji.imageName] forState:UIControlStateNormal];
         index += 1;
     }
 
@@ -122,7 +123,7 @@ static CGFloat const PPStickerPageViewEmojiButtonVerticalMargin = 16.0;
 - (void)prepareForReuse
 {
     self.sticker = nil;
-    for (UIButton *button in self.emojiButtons) {
+    for (PPButton *button in self.emojiButtons) {
         [button setImage:nil forState:UIControlStateNormal];
         button.frame = CGRectZero;
     }
@@ -197,6 +198,16 @@ static CGFloat const PPStickerPageViewEmojiButtonVerticalMargin = 16.0;
     return emojis;
 }
 
+- (UIImage *)emojiImageWithName:(NSString *)name
+{
+    if (!name.length) {
+        return nil;
+    }
+    
+    UIImage *image = [UIImage imageNamed:[@"Sticker.bundle" stringByAppendingPathComponent:name]];
+    return image;
+}
+
 - (void)didLongPressEmoji:(UILongPressGestureRecognizer *)recognizer
 {
     if (!self.emojiButtons || !self.emojiButtons.count) {
@@ -212,7 +223,7 @@ static CGFloat const PPStickerPageViewEmojiButtonVerticalMargin = 16.0;
     UIButton *currentButton = nil;
     CGPoint point = [recognizer locationInView:self];
     for (NSUInteger i = 0, max = self.emojiButtons.count; i < max; i++) {
-        if (CGRectContainsPoint(self.emojiButtons[i].frame, point)) {
+        if (CGRectContainsPoint(UIEdgeInsetsInsetRect(self.emojiButtons[i].frame, self.emojiButtons[i].touchInsets), point)) {
             if (i < emojis.count) {
                 currentButton = self.emojiButtons[i];
                 emoji = emojis[i];

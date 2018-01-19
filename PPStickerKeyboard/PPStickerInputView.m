@@ -6,15 +6,15 @@
 //  Copyright © 2018年 Vernon. All rights reserved.
 //
 
-#import "PPStickerTextView.h"
+#import "PPStickerInputView.h"
 #import "PPStickerKeyboard.h"
 #import "PPStickerDataManager.h"
+#import "PPStickerTextView.h"
 #import "PPUtil.h"
 
 static CGFloat const PPStickerTextViewHeight = 44.0;
-static CGFloat const PPStickerTextViewLeftRightPadding = 20.0;
 
-static CGFloat const PPStickerTextViewTextViewTopMargin = 6.0;
+static CGFloat const PPStickerTextViewTextViewTopMargin = 10.0;
 static CGFloat const PPStickerTextViewTextViewUnfocusLeftRightPadding = 5.0;
 static CGFloat const PPStickerTextViewTextViewLeftRightPadding = 16.0;
 static CGFloat const PPStickerTextViewTextViewBottomMargin = 10.0;
@@ -28,21 +28,20 @@ static CGFloat const PPStickerTextViewToggleButtonLength = 24.0;
 
 #define STICKER_KEYBOARD_HEIGHT ([UIScreen pp_isIPhoneX] ? 34.0 + 212.0 : 212.0)
 
-@interface PPStickerTextView () <UITextViewDelegate, PPStickerKeyboardDelegate> {
-    BOOL _keepsPreMode;
-}
+@interface PPStickerInputView () <UITextViewDelegate, PPStickerKeyboardDelegate>
 
-@property (nonatomic, strong) UITextView *textView;
+@property (nonatomic, strong) PPStickerTextView *textView;
 @property (nonatomic, strong) UIView *separatedLine;
-@property (nonatomic, strong) UIButton *emojiToggleButton;
+@property (nonatomic, strong) PPButton *emojiToggleButton;
 @property (nonatomic, strong) PPStickerKeyboard *stickerKeyboard;
 @property (nonatomic, strong) UIView *bottomBGView;     // 消除语音键盘的空隙
 
 @property (nonatomic, assign, readwrite) PPKeyboardType keyboardType;
+@property (nonatomic, assign) BOOL keepsPreModeTextViewWillEdited;
 
 @end
 
-@implementation PPStickerTextView
+@implementation PPStickerInputView
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -51,11 +50,10 @@ static CGFloat const PPStickerTextViewToggleButtonLength = 24.0;
         self.contentMode = UIViewContentModeRedraw;
         self.exclusiveTouch = YES;
         self.backgroundColor = [UIColor whiteColor];
-        self.textView.backgroundColor = [UIColor grayColor];
 
         _stickerKeyboard.delegate = self;
         _keyboardType = PPKeyboardTypeSystem;
-        _keepsPreMode = YES;
+        _keepsPreModeTextViewWillEdited = YES;
 
         [self addSubview:self.textView];
         [self addSubview:self.separatedLine];
@@ -91,20 +89,20 @@ static CGFloat const PPStickerTextViewToggleButtonLength = 24.0;
     [super layoutSubviews];
 
     self.textView.frame = [self frameTextView];
-    if (!self.textView.isFirstResponder) {
-        self.separatedLine.frame = CGRectZero;
-        self.emojiToggleButton.frame = CGRectZero;
-    } else {
+    if (!self.keepsPreModeTextViewWillEdited) {
         self.separatedLine.frame = [self frameSeparatedLine];
         self.emojiToggleButton.frame = [self frameEmojiToggleButton];
+    } else {
+        self.separatedLine.frame = CGRectZero;
+        self.emojiToggleButton.frame = CGRectZero;
     }
 
     [self refreshTextUI];
 }
 
 - (CGFloat)heightThatFits
-{    
-    if (_keepsPreMode) {
+{
+    if (self.keepsPreModeTextViewWillEdited) {
         return PPStickerTextViewHeight;
     } else {
         CGFloat textViewHeight = [self.textView.layoutManager usedRectForTextContainer:self.textView.textContainer].size.height;
@@ -170,16 +168,19 @@ static CGFloat const PPStickerTextViewToggleButtonLength = 24.0;
 
 #pragma mark - getter / setter
 
-- (UITextView *)textView
+- (PPStickerTextView *)textView
 {
     if (!_textView) {
-        _textView = [[UITextView alloc] initWithFrame:self.bounds];
+        _textView = [[PPStickerTextView alloc] initWithFrame:self.bounds];
         _textView.delegate = self;
         _textView.backgroundColor = [UIColor clearColor];
         _textView.font = [UIFont systemFontOfSize:PPStickerTextViewFontSize];
         _textView.scrollsToTop = NO;
         _textView.returnKeyType = UIReturnKeySend;
         _textView.enablesReturnKeyAutomatically = YES;
+        _textView.placeholder = @"我是表情键盘";
+        _textView.placeholderColor = [UIColor pp_colorWithRGBString:@"#B4B4B4"];
+        _textView.textContainerInset = UIEdgeInsetsZero;
         if (@available(iOS 11.0, *)) {
             _textView.textDragInteraction.enabled = NO;
         }
@@ -196,11 +197,12 @@ static CGFloat const PPStickerTextViewToggleButtonLength = 24.0;
     return _separatedLine;
 }
 
-- (UIButton *)emojiToggleButton
+- (PPButton *)emojiToggleButton
 {
     if (!_emojiToggleButton) {
-        _emojiToggleButton = [[UIButton alloc] init];
+        _emojiToggleButton = [[PPButton alloc] init];
         [_emojiToggleButton setImage:[UIImage imageNamed:@"toggle_emoji"] forState:UIControlStateNormal];
+        _emojiToggleButton.touchInsets = UIEdgeInsetsMake(-12, -20, -12, -20);
         [_emojiToggleButton addTarget:self action:@selector(toggleKeyboardDidClick:) forControlEvents:UIControlEventTouchUpInside];
     }
     return _emojiToggleButton;
@@ -210,6 +212,7 @@ static CGFloat const PPStickerTextViewToggleButtonLength = 24.0;
 {
     if (!_stickerKeyboard) {
         _stickerKeyboard = [[PPStickerKeyboard alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.bounds), STICKER_KEYBOARD_HEIGHT)];
+        _stickerKeyboard.delegate = self;
     }
     return _stickerKeyboard;
 }
@@ -246,6 +249,18 @@ static CGFloat const PPStickerTextViewToggleButtonLength = 24.0;
         } else {
             changesAnimations();
         }
+    }
+}
+
+- (void)setKeepsPreModeTextViewWillEdited:(BOOL)keepsPreModeTextViewWillEdited
+{
+    _keepsPreModeTextViewWillEdited = keepsPreModeTextViewWillEdited;
+    if (!keepsPreModeTextViewWillEdited) {
+        self.separatedLine.hidden = NO;
+        self.separatedLine.frame = [self frameSeparatedLine];
+    } else {
+        self.separatedLine.hidden = YES;
+        self.separatedLine.frame = CGRectZero;
     }
 }
 
@@ -298,10 +313,10 @@ static CGFloat const PPStickerTextViewToggleButtonLength = 24.0;
     CGFloat width = self.bounds.size.width - (2 * minX);
 
     CGFloat height = 0;
-    if (!self.textView.isFirstResponder) {
+    if (self.keepsPreModeTextViewWillEdited) {
         height = CGRectGetHeight(self.bounds) - 2 * PPStickerTextViewTextViewTopMargin;
     } else {
-       height = CGRectGetHeight(self.bounds) - PPStickerTextViewTextViewTopMargin - PPStickerTextViewTextViewBottomMargin - PPStickerTextViewEmojiToggleLength;
+        height = CGRectGetHeight(self.bounds) - PPStickerTextViewTextViewTopMargin - PPStickerTextViewTextViewBottomMargin - PPStickerTextViewEmojiToggleLength;
     }
     if (height < 0) {
         height = self.bounds.size.height;
@@ -317,15 +332,21 @@ static CGFloat const PPStickerTextViewToggleButtonLength = 24.0;
 
 - (CGRect)frameEmojiToggleButton
 {
-    return CGRectMake(PPStickerTextViewLeftRightPadding, CGRectGetHeight(self.bounds) - (PPStickerTextViewEmojiToggleLength + PPStickerTextViewToggleButtonLength) / 2, PPStickerTextViewToggleButtonLength, PPStickerTextViewToggleButtonLength);
+    return CGRectMake(PPStickerTextViewTextViewLeftRightPadding, CGRectGetHeight(self.bounds) - (PPStickerTextViewEmojiToggleLength + PPStickerTextViewToggleButtonLength) / 2, PPStickerTextViewToggleButtonLength, PPStickerTextViewToggleButtonLength);
 }
 
 #pragma mark - UITextView
 
 - (BOOL)textViewShouldBeginEditing:(UITextView *)textView
 {
-    _keepsPreMode = NO;
-    return YES;
+    self.keepsPreModeTextViewWillEdited = NO;
+    [self.inputView changeKeyboardTo:PPKeyboardTypeSystem];
+
+    if ([self.delegate respondsToSelector:@selector(stickerInputViewShouldBeginEditing:)]) {
+        return [self.delegate stickerInputViewShouldBeginEditing:self];
+    } else {
+        return YES;
+    }
 }
 
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
@@ -340,16 +361,17 @@ static CGFloat const PPStickerTextViewToggleButtonLength = 24.0;
 
 - (void)textViewDidEndEditing:(UITextView *)textView
 {
-    _keepsPreMode = YES;
-    if ([self.delegate respondsToSelector:@selector(stickerTextViewDidEndEditing:)]) {
-        [self.delegate stickerTextViewDidEndEditing:self];
+    self.keepsPreModeTextViewWillEdited = YES;
+
+    if ([self.delegate respondsToSelector:@selector(stickerInputViewDidEndEditing:)]) {
+        [self.delegate stickerInputViewDidEndEditing:self];
     }
 }
 
 - (void)delegateDidPressReturnKey
 {
-    if ([self.delegate respondsToSelector:@selector(stickerTextViewDidPressReturnKey:)]) {
-        [self.delegate stickerTextViewDidPressReturnKey:self];
+    if ([self.delegate respondsToSelector:@selector(stickerInputViewDidPressReturnKey:)]) {
+        [self.delegate stickerInputViewDidPressReturnKey:self];
     }
 }
 
@@ -363,8 +385,8 @@ static CGFloat const PPStickerTextViewToggleButtonLength = 24.0;
 
     [self.textView scrollRangeToVisible:self.textView.selectedRange];
 
-    if ([self.delegate respondsToSelector:@selector(stickerTextViewDidChange:)]) {
-        [self.delegate stickerTextViewDidChange:self];
+    if ([self.delegate respondsToSelector:@selector(stickerInputViewDidChange:)]) {
+        [self.delegate stickerInputViewDidChange:self];
     }
 }
 
@@ -398,28 +420,13 @@ static CGFloat const PPStickerTextViewToggleButtonLength = 24.0;
     return [self.textView isFirstResponder];
 }
 
-- (BOOL)becomeFirstResponder
-{
-    return [self.textView becomeFirstResponder];
-}
-
 - (BOOL)resignFirstResponder
 {
     [super resignFirstResponder];
-    _keepsPreMode = YES;
+    self.keepsPreModeTextViewWillEdited = YES;
     [self changeKeyboardTo:PPKeyboardTypeNone];
     [self setNeedsLayout];
     return [self.textView resignFirstResponder];
-}
-
-- (BOOL)canResignFirstResponder
-{
-    return [self.textView canResignFirstResponder];
-}
-
-- (BOOL)canBecomeFirstResponder
-{
-    return [self.textView canBecomeFirstResponder];
 }
 
 #pragma mark - Keyboard
@@ -442,7 +449,7 @@ static CGFloat const PPStickerTextViewToggleButtonLength = 24.0;
         return;
     }
 
-    UIImage *emojiImage = [UIImage imageNamed:emoji.imageName];
+    UIImage *emojiImage = [UIImage imageNamed:[@"Sticker.bundle" stringByAppendingPathComponent:emoji.imageName]];
     if (!emojiImage) {
         return;
     }
@@ -483,8 +490,8 @@ static CGFloat const PPStickerTextViewToggleButtonLength = 24.0;
 
 - (void)stickerKeyboardDidClickSendButton:(PPStickerKeyboard *)stickerKeyboard
 {
-    if (self.delegate && [self.delegate respondsToSelector:@selector(stickerTextViewDidClickSendButton:)]) {
-        [self.delegate stickerTextViewDidClickSendButton:self];
+    if (self.delegate && [self.delegate respondsToSelector:@selector(stickerInputViewDidClickSendButton:)]) {
+        [self.delegate stickerInputViewDidClickSendButton:self];
     }
 }
 

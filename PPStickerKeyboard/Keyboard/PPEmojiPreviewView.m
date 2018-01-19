@@ -40,7 +40,7 @@ static CGFloat PPEmojiPreviewTextHeight = 13.0;
     if (!self.emoji) {
         return;
     }
-    self.emojiImageView.image = [UIImage imageNamed:self.emoji.imageName];
+    self.emojiImageView.image = [UIImage imageNamed:[@"Sticker.bundle" stringByAppendingPathComponent:self.emoji.imageName]];
     self.emojiImageView.frame = CGRectMake(PPEmojiPreviewImageLeftRightPadding, PPEmojiPreviewImageTopPadding, PPEmojiPreviewImageLength, PPEmojiPreviewImageLength);
 
     self.descriptionLabel.text = self.emoji.emojiDescription;

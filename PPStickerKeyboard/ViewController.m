@@ -7,11 +7,11 @@
 //
 
 #import "ViewController.h"
-#import "PPStickerTextView.h"
+#import "PPStickerInputView.h"
 
-@interface ViewController () <PPStickerTextViewDelegate>
+@interface ViewController () <PPStickerInputViewDelegate>
 
-@property (nonatomic, strong) PPStickerTextView *stickerTextView;
+@property (nonatomic, strong) PPStickerInputView *inputView;
 
 @end
 
@@ -25,10 +25,10 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    [self.view addSubview:self.stickerTextView];
-    CGFloat height = [self.stickerTextView heightThatFits];
-    self.stickerTextView.frame = CGRectMake(0, CGRectGetHeight(self.view.bounds) - height, CGRectGetWidth(self.view.bounds), height);
-    
+    [self.view addSubview:self.inputView];
+    CGFloat height = [self.inputView heightThatFits];
+    self.inputView.frame = CGRectMake(0, CGRectGetHeight(self.view.bounds) - height, CGRectGetWidth(self.view.bounds), height);
+
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
 }
@@ -36,33 +36,33 @@
 - (void)viewDidLayoutSubviews
 {
     [super viewDidLayoutSubviews];
-
-    
 }
 
-- (PPStickerTextView *)stickerTextView
+- (PPStickerInputView *)inputView
 {
-    if (!_stickerTextView) {
-        _stickerTextView = [[PPStickerTextView alloc] init];
+    if (!_inputView) {
+        _inputView = [[PPStickerInputView alloc] init];
+        _inputView.delegate = self;
     }
-    return _stickerTextView;
+    return _inputView;
 }
 
 - (void)keyboardWillShow:(NSNotification *)notification
 {
-    if (![self.stickerTextView isFirstResponder]) {
+    if (![self.inputView isFirstResponder]) {
         return;
     }
 
     NSDictionary *userInfo = [notification userInfo];
     NSTimeInterval duration = [userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
     CGRect keyboardFrame = [userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
-    CGRect stickerTextViewFrame = self.stickerTextView.frame;
-    CGFloat textViewHeight = [self.stickerTextView heightThatFits];
-    stickerTextViewFrame.origin.y = CGRectGetHeight(self.view.bounds) - CGRectGetHeight(keyboardFrame) - textViewHeight;
+    CGRect inputViewFrame = self.inputView.frame;
+    CGFloat textViewHeight = [self.inputView heightThatFits];
+    inputViewFrame.origin.y = CGRectGetHeight(self.view.bounds) - CGRectGetHeight(keyboardFrame) - textViewHeight;
+    inputViewFrame.size.height = textViewHeight;
 
     [UIView animateWithDuration:duration animations:^{
-        self.stickerTextView.frame = stickerTextViewFrame;
+        self.inputView.frame = inputViewFrame;
     }];
 }
 
@@ -70,15 +70,16 @@
 {
     NSDictionary *userInfo = [notification userInfo];
     NSTimeInterval duration = [userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
-    CGRect stickerTextViewFrame = self.stickerTextView.frame;
-    CGFloat textViewHeight = [self.stickerTextView heightThatFits];
-    stickerTextViewFrame.origin.y = CGRectGetHeight(self.view.bounds) - textViewHeight;
+    CGRect inputViewFrame = self.inputView.frame;
+    CGFloat textViewHeight = [self.inputView heightThatFits];
+    inputViewFrame.origin.y = CGRectGetHeight(self.view.bounds) - textViewHeight;
+    inputViewFrame.size.height = textViewHeight;
 
     [UIView animateWithDuration:duration animations:^{
-        self.stickerTextView.frame = stickerTextViewFrame;
+        self.inputView.frame = inputViewFrame;
     }];
 }
 
-#pragma mark - PPStickerTextViewDelegate
+#pragma mark - PPinputViewDelegate
 
 @end
