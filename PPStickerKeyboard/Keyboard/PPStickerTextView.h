@@ -14,9 +14,6 @@
 
 @property (nonatomic, strong) UIColor *placeholderColor;
 
-/**
- *  用于垂直居中，目前实现方法会改变scrollView的contentInset
- */
 @property (nonatomic) BOOL verticalCenter;
 
 @end

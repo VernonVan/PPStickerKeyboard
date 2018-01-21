@@ -8,7 +8,6 @@
 
 #import "PPStickerInputView.h"
 #import "PPStickerKeyboard.h"
-#import "PPStickerDataManager.h"
 #import "PPStickerTextView.h"
 #import "PPUtil.h"
 
@@ -25,8 +24,6 @@ static CGFloat const PPStickerTextViewFontSize = 16.0;
 
 static CGFloat const PPStickerTextViewEmojiToggleLength = 48.0;
 static CGFloat const PPStickerTextViewToggleButtonLength = 24.0;
-
-#define STICKER_KEYBOARD_HEIGHT ([UIScreen pp_isIPhoneX] ? 34.0 + 212.0 : 212.0)
 
 @interface PPStickerInputView () <UITextViewDelegate, PPStickerKeyboardDelegate>
 
@@ -51,7 +48,6 @@ static CGFloat const PPStickerTextViewToggleButtonLength = 24.0;
         self.exclusiveTouch = YES;
         self.backgroundColor = [UIColor whiteColor];
 
-        _stickerKeyboard.delegate = self;
         _keyboardType = PPKeyboardTypeSystem;
         _keepsPreModeTextViewWillEdited = YES;
 
@@ -130,6 +126,7 @@ static CGFloat const PPStickerTextViewToggleButtonLength = 24.0;
 - (void)clearText
 {
     self.textView.text = nil;
+    self.textView.font = [UIFont systemFontOfSize:PPStickerTextViewFontSize];
     [self sizeToFit];
 }
 
@@ -154,7 +151,7 @@ static CGFloat const PPStickerTextViewToggleButtonLength = 24.0;
             self.textView.inputView = nil;
             [self.textView reloadInputViews];
             break;
-        case PPKeyboardTypeSticker:
+        case PPKeyboardTypeSticker:            
             [self.emojiToggleButton setImage:[UIImage imageNamed:@"toggle_keyboard"] forState:UIControlStateNormal];
             self.textView.inputView = self.stickerKeyboard;
             [self.textView reloadInputViews];
@@ -211,7 +208,8 @@ static CGFloat const PPStickerTextViewToggleButtonLength = 24.0;
 - (PPStickerKeyboard *)stickerKeyboard
 {
     if (!_stickerKeyboard) {
-        _stickerKeyboard = [[PPStickerKeyboard alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.bounds), STICKER_KEYBOARD_HEIGHT)];
+        _stickerKeyboard = [[PPStickerKeyboard alloc] init];
+        _stickerKeyboard.frame = CGRectMake(0, 0, CGRectGetWidth(self.bounds), [self.stickerKeyboard heightThatFits]);
         _stickerKeyboard.delegate = self;
     }
     return _stickerKeyboard;
@@ -352,7 +350,9 @@ static CGFloat const PPStickerTextViewToggleButtonLength = 24.0;
 - (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
 {
     if ([@"\n" isEqualToString:text]) {
-        [self delegateDidPressReturnKey];
+        if (self.delegate && [self.delegate respondsToSelector:@selector(stickerInputViewDidClickSendButton:)]) {
+            [self.delegate stickerInputViewDidClickSendButton:self];
+        }
         return NO;
     }
 
@@ -368,13 +368,6 @@ static CGFloat const PPStickerTextViewToggleButtonLength = 24.0;
     }
 }
 
-- (void)delegateDidPressReturnKey
-{
-    if ([self.delegate respondsToSelector:@selector(stickerInputViewDidPressReturnKey:)]) {
-        [self.delegate stickerInputViewDidPressReturnKey:self];
-    }
-}
-
 - (void)textViewDidChange:(UITextView *)textView
 {
     [self refreshTextUI];
@@ -382,8 +375,6 @@ static CGFloat const PPStickerTextViewToggleButtonLength = 24.0;
     CGSize size = [self sizeThatFits:self.bounds.size];
     CGRect newFrame = CGRectMake(CGRectGetMinX(self.frame), CGRectGetMaxY(self.frame) - size.height, size.width, size.height);
     [self setFrame:newFrame animated:YES];
-
-    [self.textView scrollRangeToVisible:self.textView.selectedRange];
 
     if ([self.delegate respondsToSelector:@selector(stickerInputViewDidChange:)]) {
         [self.delegate stickerInputViewDidChange:self];
@@ -431,14 +422,45 @@ static CGFloat const PPStickerTextViewToggleButtonLength = 24.0;
 
 #pragma mark - Keyboard
 
-- (void)keyboardWillShow:(NSNotification *)notif
+- (void)keyboardWillShow:(NSNotification *)notification
 {
+    if (!self.superview) {
+        return;
+    }
+    
     [self.superview insertSubview:self.bottomBGView belowSubview:self];
+    
+    NSDictionary *userInfo = [notification userInfo];
+    NSTimeInterval duration = [userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+    CGRect keyboardFrame = [userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    CGRect inputViewFrame = self.frame;
+    CGFloat textViewHeight = [self heightThatFits];
+    inputViewFrame.origin.y = CGRectGetHeight(self.superview.bounds) - CGRectGetHeight(keyboardFrame) - textViewHeight;
+    inputViewFrame.size.height = textViewHeight;
+    
+    [UIView animateWithDuration:duration animations:^{
+        self.frame = inputViewFrame;
+    }];
 }
 
-- (void)keyboardWillHide:(NSNotification *)notif
+- (void)keyboardWillHide:(NSNotification *)notification
 {
+    if (!self.superview) {
+        return;
+    }
+    
     [self.bottomBGView removeFromSuperview];
+    
+    NSDictionary *userInfo = [notification userInfo];
+    NSTimeInterval duration = [userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+    CGRect inputViewFrame = self.frame;
+    CGFloat textViewHeight = [self heightThatFits];
+    inputViewFrame.origin.y = CGRectGetHeight(self.superview.bounds) - textViewHeight - PP_SAFEAREAINSETS(self.superview).bottom;
+    inputViewFrame.size.height = textViewHeight;
+    
+    [UIView animateWithDuration:duration animations:^{
+        self.frame = inputViewFrame;
+    }];
 }
 
 #pragma mark - PPStickerKeyboardDelegate

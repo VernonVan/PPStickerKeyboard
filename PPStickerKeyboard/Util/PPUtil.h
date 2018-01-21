@@ -9,12 +9,13 @@
 #ifndef PPUtil_h
 #define PPUtil_h
 
-#import "PPAttributedString.h"
-#import "PPButton.h"
-#import "PPColor.h"
+#import "NSString+PPAddition.h"
+#import "NSAttributedString+PPAddition.h"
+#import "UIButton+PPAddition.h"
+#import "PPSlideLineButton.h"
+#import "UIColor+PPAddition.h"
 #import "PPQueuingScrollView.h"
-#import "PPScreen.h"
-#import "PPScrollView.h"
-#import "PPString.h"
+#import "UIScreen+PPAddition.h"
+#import "UIScrollView+PPAddition.h"
 
 #endif /* PPUtil_h */

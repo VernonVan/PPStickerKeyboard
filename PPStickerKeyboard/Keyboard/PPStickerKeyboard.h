@@ -22,4 +22,6 @@
 
 @property (nonatomic, weak) id<PPStickerKeyboardDelegate> delegate;
 
+- (CGFloat)heightThatFits;
+
 @end

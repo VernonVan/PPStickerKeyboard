@@ -8,7 +8,6 @@
 
 #import "PPStickerKeyboard.h"
 #import "PPEmojiPreviewView.h"
-#import "PPSlideLineButton.h"
 #import "PPStickerPageView.h"
 #import "PPStickerDataManager.h"
 #import "PPUtil.h"
@@ -17,14 +16,13 @@ static CGFloat const PPStickerTopInset = 12.0;
 static CGFloat const PPStickerScrollViewHeight = 132.0;
 static CGFloat const PPKeyboardPageControlTopMargin = 10.0;
 static CGFloat const PPKeyboardPageControlHeight = 7.0;
+static CGFloat const PPKeyboardPageControlBottomMargin = 6.0;
 static CGFloat const PPKeyboardCoverButtonWidth = 50.0;
 static CGFloat const PPKeyboardCoverButtonHeight = 44.0;
 static CGFloat const PPPreviewViewWidth = 92.0;
 static CGFloat const PPPreviewViewHeight = 137.0;
 
 static NSString *const PPStickerPageViewReuseID = @"PPStickerPageView";
-
-#define SEGMENT_HEIGHT ([UIScreen pp_isIPhoneX] ? 34.0 + 44.0 : 44.0)
 
 @interface PPStickerKeyboard () <PPStickerPageViewDelegate, PPQueuingScrollViewDelegate>
 @property (nonatomic, strong) NSArray<PPSticker *> *stickers;
@@ -39,6 +37,12 @@ static NSString *const PPStickerPageViewReuseID = @"PPStickerPageView";
 
 @implementation PPStickerKeyboard {
     NSUInteger _currentStickerIndex;
+}
+
+- (instancetype)init
+{
+    self = [self initWithFrame:CGRectZero];
+    return self;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -68,11 +72,16 @@ static NSString *const PPStickerPageViewReuseID = @"PPStickerPageView";
     self.pageControl.frame = CGRectMake(0, CGRectGetMaxY(self.queuingScrollView.frame) + PPKeyboardPageControlTopMargin, CGRectGetWidth(self.bounds), PPKeyboardPageControlHeight);
 
     self.bottomScrollableSegment.contentSize = CGSizeMake(self.stickerCoverButtons.count * PPKeyboardCoverButtonWidth, PPKeyboardCoverButtonHeight);
-    self.bottomScrollableSegment.frame = CGRectMake(0, CGRectGetHeight(self.bounds) - SEGMENT_HEIGHT, CGRectGetWidth(self.bounds) - PPKeyboardCoverButtonWidth, SEGMENT_HEIGHT);
+    self.bottomScrollableSegment.frame = CGRectMake(0, CGRectGetHeight(self.bounds) - PPKeyboardCoverButtonHeight - PP_SAFEAREAINSETS(self).bottom, CGRectGetWidth(self.bounds) - PPKeyboardCoverButtonWidth, PPKeyboardCoverButtonHeight);
     [self reloadScrollableSegment];
 
     self.sendButton.frame = CGRectMake(CGRectGetWidth(self.bounds) - PPKeyboardCoverButtonWidth, CGRectGetMinY(self.bottomScrollableSegment.frame), PPKeyboardCoverButtonWidth, PPKeyboardCoverButtonHeight);
-    self.bottomBGView.frame = CGRectMake(0, CGRectGetMinY(self.bottomScrollableSegment.frame), CGRectGetWidth(self.frame), SEGMENT_HEIGHT);
+    self.bottomBGView.frame = CGRectMake(0, CGRectGetMinY(self.bottomScrollableSegment.frame), CGRectGetWidth(self.frame), PPKeyboardCoverButtonHeight + PP_SAFEAREAINSETS(self).bottom);
+}
+
+- (CGFloat)heightThatFits
+{
+    return PPStickerTopInset + PPStickerScrollViewHeight + PPKeyboardPageControlTopMargin + PPKeyboardPageControlHeight + PPKeyboardPageControlBottomMargin + PPKeyboardCoverButtonHeight + ([UIScreen pp_isIPhoneX] ? PP_IPHONEX_BOTTOM_INSET : 0);
 }
 
 #pragma mark - getter / setter
@@ -106,6 +115,7 @@ static NSString *const PPStickerPageViewReuseID = @"PPStickerPageView";
         [_sendButton setTitle:@"发送" forState:UIControlStateNormal];
         [_sendButton setTitleColor:[UIColor pp_colorWithRGBString:@"#2196F3"] forState:UIControlStateNormal];
         _sendButton.linePosition = PPSlideLineButtonPositionLeft;
+        _sendButton.lineColor = [UIColor pp_colorWithRGBString:@"#D1D1D1"];
         [_sendButton addTarget:self action:@selector(sendAction:) forControlEvents:UIControlEventTouchUpInside];
     }
     return _sendButton;
@@ -215,7 +225,7 @@ static NSString *const PPStickerPageViewReuseID = @"PPStickerPageView";
 
     PPStickerPageView *pageView = [self queuingScrollView:self.queuingScrollView pageViewForStickerAtIndex:0];
     [self.queuingScrollView displayView:pageView];
-    
+
     [self reloadScrollableSegment];
 }
 

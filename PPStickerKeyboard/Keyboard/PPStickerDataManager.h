@@ -12,7 +12,7 @@
 @interface PPStickerMatchingResult : NSObject
 @property (nonatomic, assign) NSRange range;                    // 匹配到的表情包文本的range
 @property (nonatomic, strong) UIImage *emojiImage;              // 如果能在本地找到emoji的图片，则此值不为空
-@property (nonatomic, strong) NSString *showingDescription;     // 显示在界面上的文本(形如：[哈哈])，不为空
+@property (nonatomic, strong) NSString *showingDescription;     // 表情的实际文本(形如：[哈哈])，不为空
 @end
 
 @interface PPStickerDataManager : NSObject
@@ -30,9 +30,10 @@
  */
 - (NSArray<PPStickerMatchingResult *> *)matchingEmojiForString:(NSString *)string;
 
-/* 匹配给定attributedString中的所有emoji，如果匹配到的emoji有本地图片的话会直接换成本地的图片；如果没有本地图片的话会把内部编码改成明文能显示的描述(如：[\e1_1:哈哈] -> [哈哈])，并会尝试下载该表情
+/* 匹配给定attributedString中的所有emoji，如果匹配到的emoji有本地图片的话会直接换成本地的图片
  *
  * @param attributedString 可能包含表情包的attributedString
+ * @param font 表情图片的对齐字体大小
  */
 - (void)replaceEmojiForAttributedString:(NSMutableAttributedString *)attributedString font:(UIFont *)font;
 

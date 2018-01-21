@@ -6,7 +6,7 @@
 //  Copyright © 2018年 Vernon. All rights reserved.
 //
 
-#import "PPScrollView.h"
+#import "UIScrollView+PPAddition.h"
 
 @implementation UIScrollView (PPAddition)
 

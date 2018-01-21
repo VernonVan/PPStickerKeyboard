@@ -6,7 +6,7 @@
 //  Copyright © 2018年 Vernon. All rights reserved.
 //
 
-#import "PPTextBackedString.h"
+#import "NSAttributedString+PPAddition.h"
 
 @implementation NSAttributedString (PPAddition)
 

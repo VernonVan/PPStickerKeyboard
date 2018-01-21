@@ -6,7 +6,7 @@
 //  Copyright © 2018年 Vernon. All rights reserved.
 //
 
-#import "PPColor.h"
+#import "UIColor+PPAddition.h"
 
 @implementation UIColor (PPAdditions)
 

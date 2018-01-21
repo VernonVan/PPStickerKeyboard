@@ -27,6 +27,7 @@ static CGFloat PPEmojiPreviewTextHeight = 13.0;
 - (instancetype)init
 {
     if (self = [super init]) {
+        self.image = [UIImage imageNamed:@"emoji-preview-bg"];
         [self addSubview:self.emojiImageView];
         [self addSubview:self.descriptionLabel];
     }
@@ -46,8 +47,6 @@ static CGFloat PPEmojiPreviewTextHeight = 13.0;
     self.descriptionLabel.text = self.emoji.emojiDescription;
     CGSize labelSize = [self.descriptionLabel textRectForBounds:CGRectMake(0, 0, PPEmojiPreviewTextMaxWidth, PPEmojiPreviewTextHeight) limitedToNumberOfLines:1].size;
     self.descriptionLabel.frame = CGRectMake((CGRectGetWidth(self.bounds) - labelSize.width) / 2, CGRectGetMaxY(self.emojiImageView.frame) + PPEmojiPreviewImageBottomMargin, labelSize.width, labelSize.height);
-
-    self.image = [UIImage imageNamed:@"emoji-preview-bg"];
 }
 
 - (void)setEmoji:(PPEmoji *)emoji

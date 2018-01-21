@@ -6,7 +6,7 @@
 //  Copyright © 2018年 Vernon. All rights reserved.
 //
 
-#import "PPScreen.h"
+#import "UIScreen+PPAddition.h"
 
 CGFloat PPOnePixelToPoint(void)
 {

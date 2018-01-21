@@ -8,34 +8,33 @@
 
 #import "ViewController.h"
 #import "PPStickerInputView.h"
+#import "PPUtil.h"
 
-@interface ViewController () <PPStickerInputViewDelegate>
-
+@interface ViewController () <UITableViewDataSource, PPStickerInputViewDelegate>
+@property (nonatomic, strong) NSArray<NSString *> *messages;
+@property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) PPStickerInputView *inputView;
-
 @end
 
 @implementation ViewController
 
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    [self.view addSubview:self.tableView];
     [self.view addSubview:self.inputView];
-    CGFloat height = [self.inputView heightThatFits];
-    self.inputView.frame = CGRectMake(0, CGRectGetHeight(self.view.bounds) - height, CGRectGetWidth(self.view.bounds), height);
-
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
 }
 
-- (void)viewDidLayoutSubviews
+- (void)viewDidAppear:(BOOL)animated
 {
-    [super viewDidLayoutSubviews];
+    [super viewDidAppear:animated];
+
+    CGFloat height = [self.inputView heightThatFits];
+    CGFloat minY = CGRectGetHeight(self.view.bounds) - height - PP_SAFEAREAINSETS(self.view).bottom;
+    self.inputView.frame = CGRectMake(0, minY, CGRectGetWidth(self.view.bounds), height);
+
+    self.tableView.frame = CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), CGRectGetMinY(self.inputView.frame));
 }
 
 - (PPStickerInputView *)inputView
@@ -47,39 +46,45 @@
     return _inputView;
 }
 
-- (void)keyboardWillShow:(NSNotification *)notification
+- (UITableView *)tableView
 {
-    if (![self.inputView isFirstResponder]) {
+    if (!_tableView) {
+        _tableView = [[UITableView alloc] init];
+        _tableView.dataSource = self;
+        [_tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"MessageCell"];
+    }
+    return _tableView;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return self.messages.count;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"MessageCell" forIndexPath:indexPath];
+    NSMutableAttributedString *attributedMessage = [[NSMutableAttributedString alloc] initWithString:self.messages[indexPath.row] attributes:@{ NSFontAttributeName: [UIFont systemFontOfSize:16.0], NSForegroundColorAttributeName: [UIColor blackColor] }];
+    [PPStickerDataManager.sharedInstance replaceEmojiForAttributedString:attributedMessage font:[UIFont systemFontOfSize:16.0]];
+    cell.textLabel.attributedText = attributedMessage;
+    return cell;
+}
+
+#pragma mark - PPStickerInputViewDelegate
+
+- (void)stickerInputViewDidClickSendButton:(PPStickerInputView *)inputView
+{
+    NSString *plainText = inputView.plainText;
+    if (!plainText.length) {
         return;
     }
-
-    NSDictionary *userInfo = [notification userInfo];
-    NSTimeInterval duration = [userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
-    CGRect keyboardFrame = [userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
-    CGRect inputViewFrame = self.inputView.frame;
-    CGFloat textViewHeight = [self.inputView heightThatFits];
-    inputViewFrame.origin.y = CGRectGetHeight(self.view.bounds) - CGRectGetHeight(keyboardFrame) - textViewHeight;
-    inputViewFrame.size.height = textViewHeight;
-
-    [UIView animateWithDuration:duration animations:^{
-        self.inputView.frame = inputViewFrame;
-    }];
+    
+    NSMutableArray *messages = [[NSMutableArray alloc] initWithArray:self.messages];
+    [messages addObject:plainText];
+    self.messages = messages;
+    [inputView clearText];
+    
+    [self.tableView reloadData];
 }
-
-- (void)keyboardWillHide:(NSNotification *)notification
-{
-    NSDictionary *userInfo = [notification userInfo];
-    NSTimeInterval duration = [userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
-    CGRect inputViewFrame = self.inputView.frame;
-    CGFloat textViewHeight = [self.inputView heightThatFits];
-    inputViewFrame.origin.y = CGRectGetHeight(self.view.bounds) - textViewHeight;
-    inputViewFrame.size.height = textViewHeight;
-
-    [UIView animateWithDuration:duration animations:^{
-        self.inputView.frame = inputViewFrame;
-    }];
-}
-
-#pragma mark - PPinputViewDelegate
 
 @end

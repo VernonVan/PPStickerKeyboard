@@ -7,7 +7,7 @@
 //
 
 #import "PPSlideLineButton.h"
-#import "PPUtil.h"
+#import "UIScreen+PPAddition.h"
 
 static CGFloat const PPSlideLineHeight = 22.0;
 
@@ -77,6 +77,7 @@ static CGFloat const PPSlideLineHeight = 22.0;
         default:
             break;
     }
+    self.lineViews = lineViews;
 }
 
 @end

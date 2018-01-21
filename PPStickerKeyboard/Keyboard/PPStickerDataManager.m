@@ -95,7 +95,7 @@
 
 - (void)replaceEmojiForAttributedString:(NSMutableAttributedString *)attributedString font:(UIFont *)font
 {
-    if (!attributedString || !attributedString.length) {
+    if (!attributedString || !attributedString.length || !font) {
         return;
     }
 

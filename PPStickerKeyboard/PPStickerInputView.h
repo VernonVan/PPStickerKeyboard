@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "PPStickerDataManager.h"
 @class PPStickerInputView;
 
 typedef NS_ENUM (NSUInteger, PPKeyboardType) {
@@ -22,8 +23,6 @@ typedef NS_ENUM (NSUInteger, PPKeyboardType) {
 - (BOOL)stickerInputViewShouldBeginEditing:(PPStickerInputView *)inputView;
 
 - (void)stickerInputViewDidEndEditing:(PPStickerInputView *)inputView;
-
-- (void)stickerInputViewDidPressReturnKey:(PPStickerInputView *)inputView;
 
 - (void)stickerInputViewDidChange:(PPStickerInputView *)inputView;
 
