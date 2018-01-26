@@ -148,12 +148,12 @@ static CGFloat const PPStickerTextViewToggleButtonLength = 24.0;
             break;
         case PPKeyboardTypeSystem:
             [self.emojiToggleButton setImage:[UIImage imageNamed:@"toggle_emoji"] forState:UIControlStateNormal];
-            self.textView.inputView = nil;
-            [self.textView reloadInputViews];
+            self.textView.inputView = nil;                          // 切换到系统键盘
+            [self.textView reloadInputViews];                       // 调用reloadInputViews方法会立刻进行键盘的切换
             break;
         case PPKeyboardTypeSticker:            
             [self.emojiToggleButton setImage:[UIImage imageNamed:@"toggle_keyboard"] forState:UIControlStateNormal];
-            self.textView.inputView = self.stickerKeyboard;
+            self.textView.inputView = self.stickerKeyboard;         // 切换到自定义的表情键盘
             [self.textView reloadInputViews];
             break;
         default:
@@ -375,6 +375,12 @@ static CGFloat const PPStickerTextViewToggleButtonLength = 24.0;
     CGSize size = [self sizeThatFits:self.bounds.size];
     CGRect newFrame = CGRectMake(CGRectGetMinX(self.frame), CGRectGetMaxY(self.frame) - size.height, size.width, size.height);
     [self setFrame:newFrame animated:YES];
+    
+    if (!self.keepsPreModeTextViewWillEdited) {
+        self.textView.frame = [self frameTextView];
+    }
+    [self.textView scrollRangeToVisible:self.textView.selectedRange];
+    
 
     if ([self.delegate respondsToSelector:@selector(stickerInputViewDidChange:)]) {
         [self.delegate stickerInputViewDidChange:self];

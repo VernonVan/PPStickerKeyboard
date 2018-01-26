@@ -24,7 +24,7 @@ static CGFloat const PPPreviewViewHeight = 137.0;
 
 static NSString *const PPStickerPageViewReuseID = @"PPStickerPageView";
 
-@interface PPStickerKeyboard () <PPStickerPageViewDelegate, PPQueuingScrollViewDelegate>
+@interface PPStickerKeyboard () <PPStickerPageViewDelegate, PPQueuingScrollViewDelegate, UIInputViewAudioFeedback>
 @property (nonatomic, strong) NSArray<PPSticker *> *stickers;
 @property (nonatomic, strong) PPQueuingScrollView *queuingScrollView;
 @property (nonatomic, strong) UIPageControl *pageControl;
@@ -289,6 +289,7 @@ static NSString *const PPStickerPageViewReuseID = @"PPStickerPageView";
 - (void)stickerPageView:(PPStickerPageView *)stickerPageView didClickEmoji:(PPEmoji *)emoji
 {
     if (self.delegate && [self.delegate respondsToSelector:@selector(stickerKeyboard:didClickEmoji:)]) {
+        [[UIDevice currentDevice] playInputClick];
         [self.delegate stickerKeyboard:self didClickEmoji:emoji];
     }
 }
@@ -296,6 +297,7 @@ static NSString *const PPStickerPageViewReuseID = @"PPStickerPageView";
 - (void)stickerPageViewDidClickDeleteButton:(PPStickerPageView *)stickerPageView
 {
     if (self.delegate && [self.delegate respondsToSelector:@selector(stickerKeyboardDidClickDeleteButton:)]) {
+        [[UIDevice currentDevice] playInputClick];
         [self.delegate stickerKeyboardDidClickDeleteButton:self];
     }
 }
@@ -320,6 +322,13 @@ static NSString *const PPStickerPageViewReuseID = @"PPStickerPageView";
 - (void)stickerPageViewHideEmojiPreviewView:(PPStickerPageView *)stickerKeyboard
 {
     [self.emojiPreviewView removeFromSuperview];
+}
+
+#pragma mark - UIInputViewAudioFeedback
+
+- (BOOL)enableInputClicksWhenVisible
+{
+    return YES;
 }
 
 @end
