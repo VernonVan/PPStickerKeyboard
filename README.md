@@ -7,6 +7,8 @@
 
 最近在公司做了个表情键盘的需求，这个需求的技术难度不会很大，比较偏向业务。但是要把用户体验做的好也是不容易的，其中有几个点需要特别注意。话不多说，下面开始正文(注：本文对应的Demo放在Github上：[https://github.com/VernonVan/PPStickerKeyboard](https://github.com/VernonVan/PPStickerKeyboard))。
 
+
+
 ## 市面上的表情键盘的分析
 
 首先来看一下市面上主要的几个APP上的表情键盘，平时使用的时候不会去关注细节，这次特意去使用了表情键盘，发现各个APP的体验还是有优有劣的。
@@ -15,11 +17,15 @@
 
 ![微信QQ表情键盘.JPG](http://upload-images.jianshu.io/upload_images/698554-2c59f42aa0dd0dd1.JPG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
+
+
 接下来看一下微博国际版，国际版调起表情键盘时是有光标的，是一个"真正的"键盘，但是想要拖拽光标的时候，很大概率上会触发到保存图片的行为（如下图所示），导致根本没办法拖动光标。
 ![微博国际版误触.JPG](http://upload-images.jianshu.io/upload_images/698554-5f667795a7778a6e.JPG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 同时微博国际版输入框表情黏贴后的光标定位是错误的，如下图，开始时光标是在第4个表情后面，然后复制狗头+害羞两个表情黏贴到光标后，光标还是在第4个表情后，同时黏贴的表情前后都莫名多了空格。
 ![微博国际版黏贴.JPG](http://upload-images.jianshu.io/upload_images/698554-d4cddecefc22cfc9.JPG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
+
 
 最后是微博，微博客户端的表情键盘的体验是非常好的，上面说到的问题都不存在，而且表情键盘的删除按钮还能长按删除输入框的内容。
 ![微博表情键盘.jpg](http://upload-images.jianshu.io/upload_images/698554-63023d1dfcce132b.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
@@ -31,10 +37,18 @@
 主要实现了以下几个功能
 
 - 能输入表情，有光标，支持复制黏贴删除表情等
+
 - 长按预览表情
+
 - 删除表情、长按连续删除表情
+
 - 适配 iPhone X
+
+  ​
+
   ![演示.GIF](http://upload-images.jianshu.io/upload_images/698554-9d1661ee627dc3ca.GIF?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
+
 
 #### 基本思路
 
@@ -60,6 +74,8 @@
 
 @end
 ```
+
+
 
 #### "真正的"键盘
 
@@ -94,6 +110,8 @@
 }
 ```
 
+
+
 #### 去除表情的拖拽交互
 
 在iOS11上，`UITextView`上的`NSTextAttachment`（表情）默认可以进行拖拽交互，但是却导致拖动光标时很容易触发这个交互（图示可以查看上面说到的微博国际版中的误触）。一番查找之后才找到一个比较隐蔽的属性：`textDragInteraction`，直接设置为`NO`就能禁止掉`NSTextAttachment`的拖拽交互。
@@ -103,6 +121,8 @@ if (@available(iOS 11.0, *)) {	// 只在iOS11及以上才有这个属性
      _textView.textDragInteraction.enabled = NO;
 }
 ```
+
+
 
 #### 与服务端的交互
 
@@ -154,6 +174,8 @@ if (@available(iOS 11.0, *)) {	// 只在iOS11及以上才有这个属性
 
 @end
 ```
+
+
 
 #### 灵活的光标
 
