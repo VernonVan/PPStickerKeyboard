@@ -1,4 +1,10 @@
 # PPStickerKeyboard
+
+
+![头图](http://upload-images.jianshu.io/upload_images/698554-43916991450f3297.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
+
+
 最近在公司做了个表情键盘的需求，这个需求的技术难度不会很大，比较偏向业务。但是要把用户体验做的好也是不容易的，其中有几个点需要特别注意。话不多说，下面开始正文(注：本文对应的Demo放在Github上：[https://github.com/VernonVan/PPStickerKeyboard](https://github.com/VernonVan/PPStickerKeyboard))。
 
 ## 市面上的表情键盘的分析
