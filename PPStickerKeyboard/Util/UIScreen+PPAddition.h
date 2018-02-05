@@ -19,8 +19,6 @@ typedef NS_ENUM (NSInteger, ZUIScreenPhysicalSize) {
 
 #define PP_SAFEAREAINSETS(view) ({ UIEdgeInsets i; if (@available(iOS 11.0, *)) { i = view.safeAreaInsets; } else { i = UIEdgeInsetsZero; } i; })
 
-#define PP_IPHONEX_BOTTOM_INSET 34.0
-
 CGFloat PPOnePixelToPoint(void);
 
 CGRect PPRectInsetEdges(CGRect rect, UIEdgeInsets edgeInsets);

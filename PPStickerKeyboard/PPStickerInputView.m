@@ -362,7 +362,12 @@ static CGFloat const PPStickerTextViewToggleButtonLength = 24.0;
 - (void)textViewDidEndEditing:(UITextView *)textView
 {
     self.keepsPreModeTextViewWillEdited = YES;
-
+    CGRect inputViewFrame = self.frame;
+    CGFloat textViewHeight = [self heightThatFits];
+    inputViewFrame.origin.y = CGRectGetHeight(self.superview.bounds) - textViewHeight - PP_SAFEAREAINSETS(self.superview).bottom;
+    inputViewFrame.size.height = textViewHeight;
+    self.frame = inputViewFrame;
+    
     if ([self.delegate respondsToSelector:@selector(stickerInputViewDidEndEditing:)]) {
         [self.delegate stickerInputViewDidEndEditing:self];
     }
@@ -401,10 +406,6 @@ static CGFloat const PPStickerTextViewToggleButtonLength = 24.0;
     CGPoint touchPoint = [touch locationInView:self];
     if (!CGRectContainsPoint(self.bounds, touchPoint)) {
         if ([self isFirstResponder]) {
-            [self.emojiToggleButton setImage:[UIImage imageNamed:@"toggle_emoji"] forState:UIControlStateNormal];
-            self.textView.inputView = nil;
-            self.keyboardType = PPKeyboardTypeSystem;
-
             [self resignFirstResponder];
         }
     } else {
@@ -434,7 +435,9 @@ static CGFloat const PPStickerTextViewToggleButtonLength = 24.0;
         return;
     }
     
-    [self.superview insertSubview:self.bottomBGView belowSubview:self];
+    if (!self.bottomBGView.superview) {
+        [self.superview insertSubview:self.bottomBGView belowSubview:self];
+    }
     
     NSDictionary *userInfo = [notification userInfo];
     NSTimeInterval duration = [userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
@@ -455,7 +458,9 @@ static CGFloat const PPStickerTextViewToggleButtonLength = 24.0;
         return;
     }
     
-    [self.bottomBGView removeFromSuperview];
+    if (self.bottomBGView.superview) {
+        [self.bottomBGView removeFromSuperview];
+    }
     
     NSDictionary *userInfo = [notification userInfo];
     NSTimeInterval duration = [userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
