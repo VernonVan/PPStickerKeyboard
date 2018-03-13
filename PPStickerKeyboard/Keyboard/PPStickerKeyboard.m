@@ -81,7 +81,10 @@ static NSString *const PPStickerPageViewReuseID = @"PPStickerPageView";
 
 - (CGFloat)heightThatFits
 {
-    CGFloat bottomInset = UIApplication.sharedApplication.delegate.window.safeAreaInsets.bottom;
+    CGFloat bottomInset = 0;
+    if (@available(iOS 11.0, *)) {
+        bottomInset = UIApplication.sharedApplication.delegate.window.safeAreaInsets.bottom;
+    }
     return PPStickerTopInset + PPStickerScrollViewHeight + PPKeyboardPageControlTopMargin + PPKeyboardPageControlHeight + PPKeyboardPageControlBottomMargin + PPKeyboardCoverButtonHeight + bottomInset;
 }
 
