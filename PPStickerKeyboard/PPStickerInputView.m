@@ -513,9 +513,26 @@ static CGFloat const PPStickerTextViewToggleButtonLength = 24.0;
         self.textView.attributedText = attributedText;
         self.textView.selectedRange = NSMakeRange(selectedRange.location, 0);
     } else {
-        [attributedText deleteCharactersInRange:NSMakeRange(selectedRange.location - 1, 1)];
+        NSUInteger deleteCharactersCount = 1;
+        
+        // 下面这段正则匹配是用来匹配文本中的所有系统自带的 emoji 表情，以确认删除按钮将要删除的是否是 emoji。这个正则匹配可以匹配绝大部分的 emoji，得到该 emoji 的正确的 length 值；不过会将某些 combined emoji（如 👨‍👩‍👧‍👦 👨‍👩‍👧‍👦 👨‍👨‍👧‍👧），这种几个 emoji 拼在一起的 combined emoji 则会被匹配成几个个体，删除时会把 combine emoji 拆成个体。瑕不掩瑜，大部分情况下表现正确，至少也不会出现删除 emoji 时崩溃的问题了。
+        NSString *emojiPattern1 = @"[\\u2600-\\u27BF\\U0001F300-\\U0001F77F\\U0001F900-\\U0001F9FF]";
+        NSString *emojiPattern2 = @"[\\u2600-\\u27BF\\U0001F300-\\U0001F77F\\U0001F900–\\U0001F9FF]\\uFE0F";
+        NSString *emojiPattern3 = @"[\\u2600-\\u27BF\\U0001F300-\\U0001F77F\\U0001F900–\\U0001F9FF][\\U0001F3FB-\\U0001F3FF]";
+        NSString *emojiPattern4 = @"[\\rU0001F1E6-\\U0001F1FF][\\U0001F1E6-\\U0001F1FF]";
+        NSString *pattern = [[NSString alloc] initWithFormat:@"%@|%@|%@|%@", emojiPattern4, emojiPattern3, emojiPattern2, emojiPattern1];
+        NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:pattern options:kNilOptions error:NULL];
+        NSArray<NSTextCheckingResult *> *matches = [regex matchesInString:attributedText.string options:kNilOptions range:NSMakeRange(0, attributedText.string.length)];
+        for (NSTextCheckingResult *match in matches) {
+            if (match.range.location + match.range.length == selectedRange.location) {
+                deleteCharactersCount = match.range.length;
+                break;
+            }
+        }
+        
+        [attributedText deleteCharactersInRange:NSMakeRange(selectedRange.location - deleteCharactersCount, deleteCharactersCount)];
         self.textView.attributedText = attributedText;
-        self.textView.selectedRange = NSMakeRange(selectedRange.location - 1, 0);
+        self.textView.selectedRange = NSMakeRange(selectedRange.location - deleteCharactersCount, 0);
     }
 
     [self textViewDidChange:self.textView];
